@@ -75,6 +75,12 @@
       "run_script": "完整的批处理/bash命令内容本身文字（而不是文件名）"
     }
   },
+  "RUN_CODE": {
+    "description": "执行一段代码脚本（可以是python保存并运行，bash/bat等控制台运行），等待其执行完毕并返回控制台输出结果。",
+    "params": {
+      "run_script": "完整的批处理/bash命令内容文字"
+    }
+  },
   "SUBMIT_CODE": {
     "description": "Coder执行完毕最终的代码结果。在JSON格式之外附带包含所编写代码本身的Markdown区块。",
     "params": {}
@@ -105,7 +111,7 @@
     }
   },
   "MODIFY_CODE": {
-    "description": "基于LLM提供的原始代码片段和提供的起始行号进行代码精确替换。无法匹配即报错。",
+    "description": "基于提供的原始代码片段和提供的起始行号进行代码精确替换。无法匹配即报错。你只有在执行READ_FILE读取相应文件内容之后，才能执行此操作",
     "params": {
       "filename": "修改的目标文件路径",
       "start_line": "1-indexed的起始匹配行号",

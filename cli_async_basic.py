@@ -186,6 +186,7 @@ class TaskManager:
         self.env_name_or_path = env_name_or_path
         self.tasks = {}
         self.task_counter = 0
+        self.system = None
 
     def get_active_tasks(self):
         return {tid: t for tid, t in self.tasks.items() if t.status == "RUNNING"}
@@ -314,53 +315,49 @@ class TaskManager:
             action = action_json.get("Action")
             params = action_json.get("Action_Params", {})
             
-            if action == "READ_CODE":
-                filename = params.get("filename", "")
-                path = os.path.join(self.workspace_dir, filename)
-                if os.path.exists(path):
-                    with open(path, "r", encoding="utf-8") as f:
-                        lines = f.readlines()
-                    res = "".join([f"{i+1}: {line}" for i, line in enumerate(lines)])
-                else: res = f"File '{filename}' does not exist."
-                coder_history.append({"action": action, "params": params, "result": res})
-                task.log(f"[Coder Action] 读取文件 {filename}")
-                
-            elif action == "RUN_CODE":
+            system = getattr(self, "system", None)
+            
+            if action == "SUBMIT_CODE":
                 files = WorkspaceManager.extract_files_from_response(resp)
-                if files: WorkspaceManager.save_files_to_workspace(files, self.workspace_dir)
-                run_script = params.get("run_script", "")
-                task.log(f"[Coder Action] 运行内部测试...")
-                
-                script_path = os.path.join(self.workspace_dir, f"coder_run_tool.{'bat' if platform.system() == 'Windows' else 'sh'}")
-                script_content = run_script
-                if self.env_type == "Conda" and self.env_name_or_path:
-                    script_content = (f"call conda activate {self.env_name_or_path}\n{run_script}" if platform.system() == "Windows" else f"source activate {self.env_name_or_path}\n{run_script}")
-                elif self.env_type == "Venv" and self.env_name_or_path:
-                    script_content = (f"call {self.env_name_or_path}\\Scripts\\activate.bat\n{run_script}" if platform.system() == "Windows" else f"source {self.env_name_or_path}/bin/activate\n{run_script}")
-
-                with open(script_path, "w", encoding="utf-8") as f: f.write(script_content)
-                cmd = f'cmd.exe /c "{script_path} & exit"' if platform.system() == "Windows" else f'bash "{script_path}"'
-                
-                env = os.environ.copy()
-                env["PYTHONUNBUFFERED"] = "1"
-                proc = subprocess.run(cmd, shell=True, cwd=self.workspace_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', text=True, env=env)
-                res = f"Execute Success: {proc.returncode == 0}\nConsole Output:\n{proc.stdout}\n"
-                coder_history.append({"action": action, "params": params, "result": res})
-                task.log(f"[Coder] 测试完毕 (Code: {proc.returncode})")
-                
-            elif action == "SUBMIT_CODE":
-                files = WorkspaceManager.extract_files_from_response(resp)
-                if not files:
-                    coder_history.append({"action": action, "params": params, "result": "错误: 未输出代码块。"})
-                    continue
-                saved_files = WorkspaceManager.save_files_to_workspace(files, self.workspace_dir)
-                task.log(f"[Coder] 最终提交代码: {', '.join(saved_files)}")
+                if files:
+                    saved_files = WorkspaceManager.save_files_to_workspace(files, self.workspace_dir)
+                    task.log(f"[Coder] 最终提交代码且保存文件: {', '.join(saved_files)}")
+                else:
+                    task.log(f"[Coder] 最终提交代码。")
                 task.status = "FINISHED"
-                task.result_summary = f"Coder Successfully Submitted Files: {', '.join(saved_files)}"
-                WorkspaceManager.git_commit_and_push_with_msg(self.workspace_dir, f"Coder submitted files: {','.join(saved_files)}")
+                task.result_summary = f"Coder Successfully Finished Task."
+                WorkspaceManager.git_commit_and_push_with_msg(self.workspace_dir, f"Coder finished task.")
                 return
+                
+            if system and action in ["READ_FILE", "WRITE_FILE", "RUN_CODE", "MODIFY_CODE"]:
+                if action in ["WRITE_FILE", "RUN_CODE"]:
+                    files = WorkspaceManager.extract_files_from_response(resp)
+                    if files: 
+                        saved = WorkspaceManager.save_files_to_workspace(files, self.workspace_dir)
+                        if action != "WRITE_FILE":
+                            task.log(f"[Coder Action] 自动保存附带代码块文件: {', '.join(saved)}")
+                        
+                # Use StandardTools asynchronously via asyncio.run
+                try:
+                    res = asyncio.run(system.tool_registry.execute(action, system, params, resp))
+                except Exception as e:
+                    res = f"Tool Execution Error: {e}"
+                    
+                coder_history.append({"action": action, "params": params, "result": res})
+                
+                # Feedback to Orchestrator via task.log
+                if action == "MODIFY_CODE":
+                    task.log(f"[Coder Action] 执行 MODIFY_CODE -> 文件 {params.get('filename')}。结果: {res[:500]}...")
+                elif action == "RUN_CODE":
+                    summary_out = res.replace('\n', ' ')
+                    task.log(f"[Coder Action] 执行 RUN_CODE。结果: {summary_out[:500]}...")
+                elif action == "READ_FILE":
+                    task.log(f"[Coder Action] 读取文件 {params.get('filename')}")
+                elif action == "WRITE_FILE":
+                    task.log(f"[Coder Action] 写文件 {params.get('filename')}")
+                    
             else:
-                coder_history.append({"action": action, "params": params, "result": f"Unknown Action: {action}"})
+                coder_history.append({"action": action, "params": params, "result": f"Unsupported or Unknown Action '{action}' for Coder."})
         
         if not task._stop_event.is_set():
             task.status = "ERROR"
@@ -434,7 +431,7 @@ class BaseContextBuilder:
         
 class PlannerContextBuilder:
     @staticmethod
-    def build_student_context(request_text: str, user_feedback: str, teacher_feedback: str, workspace_tree: str, hardware_status: str, action_history: list, is_last_step = False) -> str:
+    def build_student_context(request_text: str, user_feedback: str, teacher_feedback: str, workspace_tree: str, hardware_status: str, action_history: list, student_plan_prev: list, is_last_step = False) -> str:
         context = f"【用户原始需求】\n{request_text}\n\n"
         context += f"【当前工作目录结构】\n{workspace_tree}\n\n{hardware_status}\n\n"
         
@@ -446,6 +443,9 @@ class PlannerContextBuilder:
         context += "【你近期的探索历史】\n"
         for h in action_history[-10:]:
             context += f"Action: {h.get('action')}, Params: {json.dumps(h.get('params',{}), ensure_ascii=False)}\nResult: {str(h.get('result', ''))}\n\n"
+        context += "【你给出的最新计划（如果为空，则说明你尚未给出任何计划）】\n"
+        plan_str = "\n".join([f"{i+1}. {step}" for i, step in enumerate(student_plan_prev)])
+        context += plan_str
         if is_last_step:
             context += f"这是最后一轮评估，你必须调用SUBMIT_PLAN给出最终的计划。"
         context += "请基于以上信息，返回你的 JSON 决策。如果调查完毕，请调用 SUBMIT_PLAN 提交计划。"
@@ -634,6 +634,33 @@ class StandardTools:
         return "Data successfully recorded."
 
     @staticmethod
+    async def run_code(system, params, resp):
+        import platform # if not already imported
+        run_script = params.get("run_script", "")
+        script_path = os.path.join(system.workspace_dir, f"sync_run_tool.{'bat' if platform.system() == 'Windows' else 'sh'}")
+        
+        env_type = system.task_manager.env_type
+        env_name_or_path = system.task_manager.env_name_or_path
+        
+        script_content = run_script
+        if env_type == "Conda" and env_name_or_path:
+            script_content = (f"call conda activate {env_name_or_path}\n{run_script}" if platform.system() == "Windows" else f"source activate {env_name_or_path}\n{run_script}")
+        elif env_type == "Venv" and env_name_or_path:
+            script_content = (f"call {env_name_or_path}\\Scripts\\activate.bat\n{run_script}" if platform.system() == "Windows" else f"source {env_name_or_path}/bin/activate\n{run_script}")
+
+        with open(script_path, "w", encoding="utf-8") as f: f.write(script_content)
+        cmd = f'cmd.exe /c "{script_path} & exit"' if platform.system() == "Windows" else f'bash "{script_path}"'
+        
+        env = os.environ.copy()
+        env["PYTHONUNBUFFERED"] = "1"
+        
+        def run_proc():
+            return subprocess.run(cmd, shell=True, cwd=system.workspace_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', text=True, env=env)
+            
+        proc = await asyncio.to_thread(run_proc)
+        return f"Execute Success: {proc.returncode == 0}\nConsole Output:\n{proc.stdout}\n"
+
+    @staticmethod
     async def finish_step(system, params, resp):
         if not system.plan_mode: return "Error: Not in Plan Mode."
         system.plan_index += system.concurrent_plan_steps
@@ -679,6 +706,7 @@ class AgentSystem:
             env_type=settings.get("env_type", "None"),
             env_name_or_path=settings.get("env_name_or_path", "")
         )
+        self.task_manager.system = self
         
         # Tools & Extensibility
         self.tool_registry = ToolRegistry()
@@ -711,6 +739,7 @@ class AgentSystem:
         self.tool_registry.register(Tool("FINISH_STEP", "完成计划步", StandardTools.finish_step))
         self.tool_registry.register(Tool("FIND_TOOL", "查找内容", StandardTools.find_tool))
         self.tool_registry.register(Tool("MODIFY_CODE", "修改代码", StandardTools.modify_code))
+        self.tool_registry.register(Tool("RUN_CODE", "执行代码", StandardTools.run_code))
 
     async def _generate_plan(self, request_text):
         await cl.Message(content="🧠 **开启高级规划模式 (Multi-Step & Adversarial Planner)**\n正在进行深度环境探索与任务拆解...").send()
@@ -725,6 +754,7 @@ class AgentSystem:
         plan_approved = False
         user_feedback = ""
         teacher_feedback = ""
+        student_plan_prev = None
 
         # 第一层循环：Human-in-the-Loop (用户审核)
         adversarial_iter = 0
@@ -764,8 +794,11 @@ class AgentSystem:
                     step.output = f"**Thoughts:** {action_json.get('Thoughts', '')}\n**Action:** `{action}`"
 
                     # 拦截特殊的提交流程工具
+                    student_plan = None
                     if action == "SUBMIT_PLAN":
                         student_plan = params.get("Plan", [])
+                        if len(student_plan)>0:
+                            student_plan_prev = student_plan
                         break
                     
                     # 调用普通系统工具
