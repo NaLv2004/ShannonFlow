@@ -4685,3 +4685,126 @@
 [2026-03-17 04:39:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
 [2026-03-17 04:39:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
 [2026-03-17 04:39:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-19 17:02:47] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2206.13418
+[2026-03-19 17:02:48] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:02:48] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:02:49] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:02:49] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:03:11] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/6287639/8948470/09094650.pdf
+[2026-03-19 17:03:12] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/6287639/8948470/09094650.pdf
+[2026-03-19 17:03:14] ERROR: [Error] 下载失败：HTTP 状态码 502
+[2026-03-19 17:03:14] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/access.2020.2995171
+[2026-03-19 17:03:15] ERROR: [Error] 下载失败：HTTP 状态码 502
+[2026-03-19 17:03:15] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/access.2020.2995171
+[2026-03-19 17:03:15] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/26/5497975/10287324.pdf
+[2026-03-19 17:03:17] ERROR: [Error] 下载失败：HTTP 状态码 502
+[2026-03-19 17:03:17] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/tcomm.2023.3325479
+[2026-03-19 17:04:58] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/26/9653733/09546779.pdf
+[2026-03-19 17:05:03] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:03] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:04] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:04] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:04] INFO: [Success] PDF 下载成功: 10.1109%2Ftcomm.2021.3114682.pdf
+[2026-03-19 17:05:04] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Ftcomm.2021.3114682.pdf
+[2026-03-19 17:05:05] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:05] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:08] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:08] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:15] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:05:15] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:19:34] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/1906.03814
+[2026-03-19 17:19:35] INFO: [Success] PDF 下载成功: 10.1109%2Ftsp.2020.3035832.pdf
+[2026-03-19 17:19:35] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Ftsp.2020.3035832.pdf
+[2026-03-19 17:19:37] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/7693/4656680/09992015.pdf
+[2026-03-19 17:19:38] ERROR: [Error] 下载失败：HTTP 状态码 404
+[2026-03-19 17:19:38] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/twc.2022.3228326
+[2026-03-19 17:19:38] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/26/5497975/10287324.pdf
+[2026-03-19 17:19:47] INFO: [Success] PDF 下载成功: 10.1109%2Ftcomm.2023.3325479.pdf
+[2026-03-19 17:19:47] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Ftcomm.2023.3325479.pdf
+[2026-03-19 17:21:24] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2023.3263545 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:24] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2022.3188543 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:24] ERROR: 无法找到 DOI: https://doi.org/10.1109/TVT.2023.3276541 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:25] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2018.2865584 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:25] ERROR: 无法找到 DOI: https://doi.org/10.1109/TVT.2021.3060571 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:25] ERROR: 无法找到 DOI: https://doi.org/10.48550/arxiv.2206.13418 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:43] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2406.19289
+[2026-03-19 17:21:43] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2406.19289.pdf
+[2026-03-19 17:21:43] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2406.19289.pdf
+[2026-03-19 17:21:44] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2018.2810291 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:44] ERROR: 无法找到 DOI: https://doi.org/10.1109/JSAC.2022.3143241 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:44] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2023.3263545 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:44] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2022.3184420 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:46] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2018.2865584 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:46] ERROR: 无法找到 DOI: https://doi.org/10.1109/TVT.2021.3060571 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:46] ERROR: 无法找到 DOI: https://doi.org/10.1109/LCOMM.2016.2594065 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:47] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/6287639/6514899/10100737.pdf
+[2026-03-19 17:21:47] ERROR: 无法找到 DOI: https://doi.org/10.1109/TSC.2019.2933827 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:47] ERROR: 无法找到 DOI: https://doi.org/10.1109/ICASSP.2018.8461715 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:47] ERROR: [Error] 下载失败：HTTP 状态码 404
+[2026-03-19 17:21:47] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/access.2023.3266656
+[2026-03-19 17:21:47] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/26/5497975/10412105.pdf
+[2026-03-19 17:21:51] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2023.3234567 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:51] ERROR: 无法找到 DOI: https://doi.org/10.1109/TVT.2023.3276541 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:51] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2021.3105678 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:52] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2019.2952445 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:21:56] INFO: [Success] PDF 下载成功: 10.1109%2Ftcomm.2024.3357627.pdf
+[2026-03-19 17:21:56] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Ftcomm.2024.3357627.pdf
+[2026-03-19 17:22:01] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2023.3263545 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:01] ERROR: 无法找到 DOI: https://doi.org/10.1109/TVT.2024.3351234 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:03] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2022.3228326 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:03] ERROR: 无法找到 DOI: https://doi.org/10.1109/JSAC.2022.3156632 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:03] ERROR: 无法找到 DOI: https://doi.org/10.1109/ACCESS.2021.3097444 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:05] ERROR: 无法找到 DOI: https://doi.org/10.1109/ICASSP.2018.8461715 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:05] ERROR: 无法找到 DOI: https://doi.org/10.1109/TSP.2019.2941584 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:05] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2017.2764010 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:08] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2019.2952445 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:08] ERROR: 无法找到 DOI: https://doi.org/10.1109/LCOMM.2020.3015557 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:11] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2022.3188543 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:11] ERROR: 无法找到 DOI: https://doi.org/10.1109/LCOMM.2023.3321567 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:11] ERROR: 无法找到 DOI: https://doi.org/10.1109/TVT.2023.3276541 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:20] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2022.3144136 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:20] ERROR: 无法找到 DOI: https://doi.org/10.1109/TSP.2014.2345353 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:22] ERROR: 无法找到 DOI: https://doi.org/10.1109/LCOMM.2016.2594065 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:22] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2014.2364020 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:22] ERROR: 无法找到 DOI: https://doi.org/10.1109/TSP.2018.2882500 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:24] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2019.2952445 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:24] ERROR: 无法找到 DOI: https://doi.org/10.1109/LCOMM.2020.3015557 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:24] ERROR: 无法找到 DOI: https://doi.org/10.1109/TCOMM.2021.3114682 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:25] ERROR: 无法找到 DOI: https://doi.org/10.1109/TSP.2019.2941584 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:25] ERROR: 无法找到 DOI: https://doi.org/10.1109/ICASSP.2018.8461715 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:25] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2017.2764010 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:55] INFO: [Download] 尝试下载 PDF: https://qmro.qmul.ac.uk/xmlui/handle/123456789/72821
+[2026-03-19 17:22:55] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2017.2764010 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:55] ERROR: 无法找到 DOI: https://doi.org/10.1109/TSP.2014.2343931 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:55] ERROR: 无法找到 DOI: https://doi.org/10.1109/TVT.2016.2524683 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:22:57] ERROR: [Warning] 下载失败：返回的内容类型不是 PDF (text/html)
+[2026-03-19 17:22:57] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/jsac.2021.3087240
+[2026-03-19 17:22:57] ERROR: 无法找到 DOI: https://doi.org/10.1109/jcin.2021.9663101 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:23:04] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2019.2952445 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:23:07] ERROR: 无法找到 DOI: https://doi.org/10.1109/TCOMM.2021.3112900 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:23:07] ERROR: 无法找到 DOI: https://doi.org/10.1109/LCOMM.2021.3060106 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:23:19] INFO: [Download Info] PDF 已经存在: 10.1109%2Ftcomm.2024.3357627.pdf
+[2026-03-19 17:23:19] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Ftcomm.2024.3357627.pdf
+[2026-03-19 17:23:37] ERROR: 无法找到 DOI: https://doi.org/10.1109/TSP.2020.3035832 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:23:57] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2023.3276632 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:23:57] ERROR: 无法找到 DOI: https://doi.org/10.1109/TSP.2020.3035832 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:24:01] INFO: [Download] 尝试下载 PDF: https://www.mdpi.com/1424-8220/25/21/6776/pdf?version=1762352944
+[2026-03-19 17:24:01] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-19 17:24:01] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.3390/s25216776
+[2026-03-19 17:24:12] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:24:12] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2206.13418.pdf
+[2026-03-19 17:24:42] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/8782661/8901158/10502324.pdf
+[2026-03-19 17:24:50] ERROR: 无法找到 DOI: https://doi.org/10.1109/JSAC.2025.3536505 对应的 PDF 下载链接，跳过阅读。
+[2026-03-19 17:25:39] INFO: [Success] PDF 下载成功: 10.1109%2Fojcoms.2024.3390000.pdf
+[2026-03-19 17:25:39] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Fojcoms.2024.3390000.pdf
+[2026-03-19 17:26:18] INFO: [Download] 尝试下载 PDF: https://www.mdpi.com/1424-8220/25/21/6776/pdf?version=1762352944
+[2026-03-19 17:26:18] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-19 17:26:18] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.3390/s25216776
+[2026-03-19 17:27:50] INFO: Loading state...
+[2026-03-19 17:27:50] INFO: State loaded
+[2026-03-19 17:29:56] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-19 17:30:00] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-19 17:30:23] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-19 17:32:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-19 17:32:25] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-19 17:33:52] ERROR: [TaskManager] Failed to send message: Chainlit context not found

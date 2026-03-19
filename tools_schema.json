@@ -1,0 +1,116 @@
+{
+  "READ_FILE": {
+    "description": "读取某个文件的内容。阅读的结果会在每行行首附带行号。如果是PDF文件，可以附加instruction参数告知需要抓取哪部分。",
+    "params": {
+      "filename": "提供所需读取的文件名(路径)"
+    }
+  },
+  "READ_CODE": {
+    "description": "读取代码某文件内容。",
+    "params": {
+      "filename": "提供所需读取的文件名"
+    }
+  },
+  "WRITE_FILE": {
+    "description": "创建或覆写一个文件。只能是txt或tex等文本文件，不可替代Coder写代码(代码由CODER写)。必须在JSON外部附带Markdown代码块。",
+    "params": {
+      "filename": "提供所需创建的文件名"
+    }
+  },
+  "SEARCH_LITERATURE": {
+    "description": "查找相关文献。建议使用AND,OR等短句或关键字拼接。",
+    "params": {
+      "queries": ["搜索词列表", "例如 ['MIMO AND Deep Learning']"]
+    }
+  },
+  "READ_PAPER": {
+    "description": "阅读某篇论文的全文。提供DOIs",
+    "params": {
+        "dois": ["论文的DOI"]
+    }
+  },
+  "KILL_TASK": {
+    "description": "终止当前正在运行的异步任务（如果发现报错卡死等）。",
+    "params": {
+      "task_id": "运行任务的ID"
+    }
+  },
+  "WAIT": {
+    "description": "暂时休眠并等待后台任务的运行结果或新状态。",
+    "params": {
+      "wait_seconds": "整数: 等待的秒数"
+    }
+  },
+  "FINISH": {
+    "description": "确认当前阶段所有用户要求均已完成，结束工作流。",
+    "params": {
+      "summary": "最终的过程总结"
+    }
+  },
+  "RECORD_DATA": {
+    "description": "保存有价值的实验仿真数据防止丢失。",
+    "params": {
+      "data": "数据和对应场景详情文本"
+    }
+  },
+  "FINISH_STEP": {
+    "description": "在计划模式下，确认当前制定的某步已完成，标记推进。",
+    "params": {}
+  },
+  "PASS_STEP": {
+    "description": "当前代码已编写完毕并通过验证，或某一步修改无误即可进入下一步骤。",
+    "params": {
+      "summary": "当前步骤修改与验证结果的综合描述"
+    }
+  },
+  "SPAWN_CODER": {
+    "description": "分发任务给另外一个Coder智能体去编写具体的Python等程序代码。传入总分结构的指令详细描述该编写/修改的内容。",
+    "params": {
+      "instruction": "详细全面的编程目标与代码结构提示"
+    }
+  },
+  "SPAWN_RUN": {
+    "description": "下发运行一个任意操作系统的控制台命令或脚本。若是linux为bash，windows则为bat。会自动将python加入到前缀依赖并带实时控制台监控输出。",
+    "params": {
+      "run_script": "完整的批处理/bash命令内容本身文字（而不是文件名）"
+    }
+  },
+  "SUBMIT_CODE": {
+    "description": "Coder执行完毕最终的代码结果。在JSON格式之外附带包含所编写代码本身的Markdown区块。",
+    "params": {}
+  },
+  "SUBMIT_PLAN": {
+    "description": "充分了解环境基础上输出一套最终规划和步骤数组。",
+    "params": {
+      "Plan": ["步骤1：...", "步骤2：...", "步骤3：..."]
+    }
+  },
+  "EVALUATE_PLAN": {
+    "description": "对草拟的执行计划进行的审核决断。可包含修改反馈。",
+    "params": {
+      "passed": "true/false",
+      "feedback": "如果不通过的详细驳回修改理由"
+    }
+  },
+  "FINISH_REVIEW": {
+    "description": "审核充分完成后给出综合审稿意见。",
+    "params": {
+      "review_content": "最终所有的审阅内容文本"
+    }
+  },
+  "FIND_TOOL": {
+    "description": "递归搜索当前文件目录，寻找内容包含给定keyword匹配的所有代码及其位置行号表格。",
+    "params": {
+      "keyword": "想要查找的目标关键字或任意代码片段"
+    }
+  },
+  "MODIFY_CODE": {
+    "description": "基于LLM提供的原始代码片段和提供的起始行号进行代码精确替换。无法匹配即报错。",
+    "params": {
+      "filename": "修改的目标文件路径",
+      "start_line": "1-indexed的起始匹配行号",
+      "old_code": "该起始行开始需要原样匹配的旧代码内容",
+      "new_code": "被替换成的新代码内容"
+    }
+  }
+}

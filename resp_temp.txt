@@ -1,23 +1,222 @@
 ```json
 {
-    "Thoughts": "之前由于缺少 markdown code block 导致 `response_2_2.tex` 写入失败。现在重新撰写 `response_2_2.tex` 来回复审稿人2的第2条意见。内容包括我们使用的硬件（NVIDIA RTX 4060）以及我们与基线DDPM参数量相同、训练时间相当或更快的声明。",
-    "Action": "WRITE_FILE",
+    "Thoughts": "我将优化 CP_ABsP.m 中的排序与截断逻辑。具体修改包括：\n1. 使用 `maxk` 替代全量排序 `sort`，以符合工程中基于 Max-Heap 的 K-selection 思想，降低复杂度。\n2. 在计算概率前通过减去最大值（`alpha_top_max`）来确保数值稳定性，防止 `exp` 函数溢出。\n3. 对 `maxk` 提取出的 `dm_max` 个候选符号进行显式排序，以确保 CDF 计算的正确性。\n4. 更新变量名（如 `alpha_top`, `top_indices`）并清理相关的逻辑，确保 Step B 中的引用也同步更新。\n5. 完善 `dm_map` 的逻辑，当 CDF 未能达到阈值 `tau` 时，截断深度设为 `dm_max`。",
+    "Action": "SUBMIT_CODE",
     "Action_Params": {
-        "filename": "response_2_2.tex",
-        "summary": "撰写了 response_2_2.tex，补充了硬件环境信息，并对比了所提方法与 DDPM 的参数量和训练时间，回应了关于计算开销和实验复现的疑问。"
+        "filename": "CP_ABsP.m"
     }
 }
 ```
 
-### File: response_2_2.tex
-```tex
-\textbf{Comment 2:} To facilitate the reproducibility of the experiments, it is recommended to supplement the experimental setup with details about the specific hardware used (e.g., GPU model) for the latency measurements. Additionally, while inference time is compared, comparing the training time and model parameter size between the proposed FlowUNet and the baseline DDPM/UNet would provide a more comprehensive assessment of the computational overhead.
+### File: CP_ABsP.m
+```matlab
+function [symLLR] = CP_ABsP(TxAntNum, RxAntNum, slen, RxSymbol, H, Nv, sym, delta, iterNum, tau, df, dm_max)
+% CP_ABsP: Cumulative-Probability Adaptive Truncation Belief Selective Propagation MIMO Detector
+% Based on Bsp_dm_df.m with adaptive truncation depth.
 
-\textbf{Response:} We sincerely thank the reviewer for pointing this out. We agree that providing full details on hardware and computational overhead is crucial for reproducibility and a fair assessment. 
+    % --- 1. Initialization ---
+    [Nr_real, Nt_real] = size(H); 
+    
+    sym = sym(:).';       % [1 x M]
+    RxSymbol = RxSymbol(:); % [Nr x 1]
+    
+    % LMMSE Initialization
+    W = (H' * H + Nv * eye(Nt_real)) \ H';
+    s_mmse = W * RxSymbol;
+    
+    % Initial Alpha (VN -> CN)
+    dist_sq = abs(repmat(s_mmse, 1, slen) - repmat(sym, Nt_real, 1)).^2;
+    alpha_init_val = -dist_sq / (2 * Nv); 
+    
+    % Normalize Initialization
+    alpha_init_val = alpha_init_val - max(alpha_init_val, [], 2);
+    
+    % Broadcast to edges: [Nt, Nr, M]
+    alpha = repmat(reshape(alpha_init_val, [Nt_real, 1, slen]), 1, Nr_real, 1);
+    
+    % Initialize Beta (CN -> VN)
+    beta = zeros(Nt_real, Nr_real, slen);
+    
+    % Pre-sort H for Selective Strategy
+    [~, H_sort_idx] = sort(abs(H), 2, 'descend'); 
+    
+    % --- 2. Iterative Loop ---
+    for iter = 1:iterNum
+        
+        % Normalize Alpha (Input for this iteration)
+        alpha = alpha - max(alpha, [], 3);
+        
+        % --- Step A: Adaptive Depth Calculation ---
+        % 1. Extract top dm_max candidates using maxk (Max-Heap based K-selection)
+        [alpha_top, top_indices] = maxk(alpha, dm_max, 3);
+        
+        % Explicitly sort these dm_max elements to ensure descending order for CDF
+        [alpha_top, local_sort_idx] = sort(alpha_top, 3, 'descend');
+        for j = 1:Nt_real
+            for i = 1:Nr_real
+                % Reorder top_indices according to sorted alpha_top
+                top_indices(j, i, :) = top_indices(j, i, local_sort_idx(j, i, :));
+            end
+        end
+        
+        % 2. Calculate Normalized Linear Probabilities
+        % Numerical stability: subtract max(alpha_top) before exp
+        alpha_top_max = max(alpha_top, [], 3);
+        % Sum of exp for all symbols to get normalization factor
+        probs_all_sum = sum(exp(alpha - alpha_top_max), 3);
+        % Probabilities of just the top candidates
+        probs = exp(alpha_top - alpha_top_max) ./ probs_all_sum;
+        
+        % 3. Calculate CDF of the top candidates
+        cdf = cumsum(probs, 3);
+        
+        % 4. Determine Adaptive Truncation Depth dm_map(j, i)
+        dm_map = zeros(Nt_real, Nr_real);
+        for j = 1:Nt_real
+            for i = 1:Nr_real
+                % Find smallest k such that cdf >= tau
+                k_idx = find(cdf(j, i, :) >= tau, 1, 'first');
+                if isempty(k_idx)
+                    dm_map(j, i) = dm_max; % Covered mass < tau, use all dm_max
+                else
+                    dm_map(j, i) = k_idx;
+                end
+            end
+        end
+        
+        % Hard decision (Top-1) for simplified interference cancellation
+        hard_sym_idx = top_indices(:, :, 1);
+        hard_sym_val = sym(hard_sym_idx); % [Nt, Nr]
+        
+        % --- Step B: Update Beta (CN i -> VN j) ---
+        for i = 1:Nr_real
+            neighbors_sorted = H_sort_idx(i, :);
+            
+            for j = 1:Nt_real
+                % Identify neighbors excluding current VN j
+                neighbors_ex_j = neighbors_sorted(neighbors_sorted ~= j);
+                
+                % Split into Chosen (Combinatorial) and Simplified (Hard Cancel)
+                if df > 1
+                    len_ne = length(neighbors_ex_j);
+                    cut = min(len_ne, df-1);
+                    idx_chosen = neighbors_ex_j(1 : cut);
+                    idx_simp   = neighbors_ex_j(cut+1 : end);
+                else
+                    idx_chosen = [];
+                    idx_simp   = neighbors_ex_j;
+                end
+                
+                % 1. Cancel Simplified Interference (using Hard Decisions)
+                if ~isempty(idx_simp)
+                    simp_vals = hard_sym_val(idx_simp, i); 
+                    I_simp = sum(H(i, idx_simp).' .* simp_vals);
+                else
+                    I_simp = 0;
+                end
+                
+                y_eff = RxSymbol(i) - I_simp;
+                
+                % 2. Combinatorial Search or Standard BP
+                if isempty(idx_chosen)
+                    % Case df=1
+                    res = y_eff - H(i, j) * sym; 
+                    metric = -abs(res).^2 / (2 * Nv);
+                else
+                    % Case df > 1 (Dynamic Combinations)
+                    dm_list = zeros(1, length(idx_chosen));
+                    for k_idx = 1:length(idx_chosen)
+                        dm_list(k_idx) = dm_map(idx_chosen(k_idx), i);
+                    end
+                    
+                    comb_indices = variable_ndgrid_combinations(dm_list);
+                    num_combs = size(comb_indices, 1);
+                    
+                    I_chosen_combs = zeros(1, num_combs);
+                    Alpha_sum_combs = zeros(1, num_combs);
+                    
+                    for k_idx = 1:length(idx_chosen)
+                        k = idx_chosen(k_idx);
+                        dm_k = dm_list(k_idx);
+                        
+                        % Extract top candidates for neighbor k
+                        curr_idxs = squeeze(top_indices(k, i, 1:dm_k));
+                        if dm_k == 1, curr_idxs = curr_idxs.'; end % Ensure vector
+                        
+                        c_syms    = sym(curr_idxs); 
+                        c_alphas  = squeeze(alpha_top(k, i, 1:dm_k));
+                        if dm_k == 1, c_alphas = c_alphas.'; end
+                        
+                        % Map based on combinations
+                        col_idx = comb_indices(:, k_idx);
+                        vals = c_syms(col_idx); 
+                        als  = c_alphas(col_idx);
+                        
+                        I_chosen_combs  = I_chosen_combs + H(i, k) * vals;
+                        Alpha_sum_combs = Alpha_sum_combs + als;
+                    end
+                    
+                    % Calculate Metric for all hypotheses of symbol s_j
+                    % Res: [slen x num_combs]
+                    Res = (y_eff - I_chosen_combs) - (H(i, j) * sym(:));
+                    Euc = -abs(Res).^2 / (2 * Nv);
+                    
+                    % Add priors from chosen neighbors
+                    TotalMetric = Euc + repmat(Alpha_sum_combs, slen, 1);
+                    
+                    % Max-Log approximation
+                    metric = max(TotalMetric, [], 2).'; % [1 x slen]
+                end
+                
+                % Normalize Beta for numerical stability
+                beta(j, i, :) = metric - max(metric);
+            end 
+        end 
+        
+        % --- Step C: Update Alpha (VN j -> CN i) ---
+        beta_sum = sum(beta, 2); % [Nt, 1, slen]
+        
+        % Extrinsic Information
+        alpha_new = repmat(beta_sum, 1, Nr_real, 1) - beta;
+        
+        % Normalize Alpha_new before damping
+        alpha_new = alpha_new - max(alpha_new, [], 3);
+        
+        % Damping Update
+        alpha = (1 - delta) * alpha_new + delta * alpha;
+        
+    end 
+    
+    % Final Output
+    final_beta_sum = squeeze(sum(beta, 2));
+    symLLR = final_beta_sum - max(final_beta_sum, [], 2);
 
-First, we have supplemented the hardware details in the revised manuscript. All model training, latency measurements, and metric evaluations were conducted on a workstation equipped with a single NVIDIA GeForce RTX 4060 Laptop GPU (8GB VRAM) and an Intel Core i7 processor with 32GB of RAM.
+end
 
-Second, regarding the model parameter size and training time, we clarify that our proposed FlowUNet and the baseline DDPM fundamentally employ the identical underlying UNet architecture (i.e., identical depth, channel widths, and self-attention mechanisms). The only structural difference lies in how the conditioning time scalar $t$ is mapped, which introduces negligible parameter overhead. Thus, both our LT-GFM model and the baseline DDPM possess approximately the exact same number of parameters. In terms of training time, flow matching involves a straightforward regression on the continuous vector field, which avoids the multi-stage noise scheduling variations of DDPMs, thus converging slightly faster. The baseline UNet, which predicts the image directly without the time-step embedding, has slightly fewer parameters and trains the fastest, but suffers severely from over-smoothing (as evidenced by its poor FID).
-
-We have added a discussion summarizing the hardware specifications and computational overhead comparisons in Section IV of the revised manuscript.
+function indices = variable_ndgrid_combinations(dm_list)
+    % variable_ndgrid_combinations: Generates all combinations for variable depths
+    num_vars = length(dm_list);
+    if num_vars == 0
+        indices = [];
+        return;
+    end
+    if num_vars == 1
+        indices = (1:dm_list(1))';
+        return;
+    end
+    
+    args = cell(1, num_vars);
+    for v = 1:num_vars
+        args{v} = 1:dm_list(v);
+    end
+    
+    % Handle dynamic number of arguments for ndgrid
+    [G{1:num_vars}] = ndgrid(args{:});
+    
+    num_combs = prod(dm_list);
+    indices = zeros(num_combs, num_vars);
+    for v = 1:num_vars
+        indices(:, v) = G{v}(:);
+    end
+end
 ```

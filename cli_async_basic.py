@@ -178,11 +178,12 @@ class AsyncTask:
         self.log("\n[System] Task was KILLED by Orchestrator.")
 
 class TaskManager:
-    def __init__(self, max_concurrent, workspace_dir, coder_model_name, conda_env):
+    def __init__(self, max_concurrent, workspace_dir, coder_model_name, env_type, env_name_or_path):
         self.max_concurrent = max_concurrent
         self.workspace_dir = workspace_dir
         self.coder_model_name = coder_model_name
-        self.conda_env = conda_env
+        self.env_type = env_type
+        self.env_name_or_path = env_name_or_path
         self.tasks = {}
         self.task_counter = 0
 
@@ -197,10 +198,31 @@ class TaskManager:
         return finished
 
     def _run_worker(self, task, run_script, tid):
-        script_path = os.path.join(self.workspace_dir, f"run_{tid}.bat")
-        with open(script_path, "w", encoding="utf-8") as f: f.write(run_script)
+        import platform
+        is_windows = platform.system() == "Windows"
+        ext = "bat" if is_windows else "sh"
+        script_path = os.path.join(self.workspace_dir, f"run_{tid}.{ext}")
         
-        cmd = f'conda run -n {self.conda_env} --no-capture-output cmd.exe /c "{script_path} & exit"'
+        script_content = run_script
+        if self.env_type == "Conda" and self.env_name_or_path:
+            if is_windows:
+                script_content = f"call conda activate {self.env_name_or_path}\n" + run_script
+            else:
+                script_content = f"source activate {self.env_name_or_path}\n" + run_script
+        elif self.env_type == "Venv" and self.env_name_or_path:
+            if is_windows:
+                script_content = f"call {self.env_name_or_path}\\Scripts\\activate.bat\n" + run_script
+            else:
+                script_content = f"source {self.env_name_or_path}/bin/activate\n" + run_script
+
+        with open(script_path, "w", encoding="utf-8") as f: 
+            f.write(script_content)
+        
+        if is_windows:
+            cmd = f'cmd.exe /c "{script_path} & exit"'
+        else:
+            cmd = f'bash "{script_path}"'
+            
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
         
@@ -247,14 +269,15 @@ class TaskManager:
         task.thread = threading.Thread(target=self._run_worker, args=(task, run_script, tid), daemon=True)
         task.thread.start()
         return tid, "Spawned successfully."
-
+    
     def _coder_worker(self, task, instruction, tid):
+        import platform
         log_dir = os.path.join(self.workspace_dir, "log")
         os.makedirs(log_dir, exist_ok=True)
         coder_agent = LLMAgent(model=self.coder_model_name, log_file=os.path.join(log_dir, f"coder_{tid}.log"))
         coder_history = []
         task.log(f"[Coder] Started task: {instruction[:50]}...")
-        pip_list = SystemMonitor.get_installed_packages(self.conda_env)
+        pip_list = SystemMonitor.get_installed_packages(self.env_name_or_path) if self.env_type == "Conda" else "Package list unavailable"
         
         for i in range(10):
             if task._stop_event.is_set(): break
@@ -269,7 +292,7 @@ class TaskManager:
             prompt += "请决定下一步 Action (READ_CODE, RUN_CODE, SUBMIT_CODE)。"
 
             try:
-                formatted_prompt = DEFAULT_CODER_PROMPT.replace("{conda_env}", self.conda_env)
+                formatted_prompt = DEFAULT_CODER_PROMPT
                 resp, _ = coder_agent.get_response_stream(prompt, formatted_prompt)
             except Exception as e:
                 task.log(f"[Coder Error] API fail: {e}")
@@ -294,7 +317,11 @@ class TaskManager:
             if action == "READ_CODE":
                 filename = params.get("filename", "")
                 path = os.path.join(self.workspace_dir, filename)
-                res = open(path, "r", encoding="utf-8").read() if os.path.exists(path) else f"File '{filename}' does not exist."
+                if os.path.exists(path):
+                    with open(path, "r", encoding="utf-8") as f:
+                        lines = f.readlines()
+                    res = "".join([f"{i+1}: {line}" for i, line in enumerate(lines)])
+                else: res = f"File '{filename}' does not exist."
                 coder_history.append({"action": action, "params": params, "result": res})
                 task.log(f"[Coder Action] 读取文件 {filename}")
                 
@@ -304,9 +331,16 @@ class TaskManager:
                 run_script = params.get("run_script", "")
                 task.log(f"[Coder Action] 运行内部测试...")
                 
-                script_path = os.path.join(self.workspace_dir, "coder_run_tool.bat")
-                with open(script_path, "w", encoding="utf-8") as f: f.write(run_script)
-                cmd = f'conda run -n {self.conda_env} --no-capture-output cmd.exe /c "{script_path} & exit"'
+                script_path = os.path.join(self.workspace_dir, f"coder_run_tool.{'bat' if platform.system() == 'Windows' else 'sh'}")
+                script_content = run_script
+                if self.env_type == "Conda" and self.env_name_or_path:
+                    script_content = (f"call conda activate {self.env_name_or_path}\n{run_script}" if platform.system() == "Windows" else f"source activate {self.env_name_or_path}\n{run_script}")
+                elif self.env_type == "Venv" and self.env_name_or_path:
+                    script_content = (f"call {self.env_name_or_path}\\Scripts\\activate.bat\n{run_script}" if platform.system() == "Windows" else f"source {self.env_name_or_path}/bin/activate\n{run_script}")
+
+                with open(script_path, "w", encoding="utf-8") as f: f.write(script_content)
+                cmd = f'cmd.exe /c "{script_path} & exit"' if platform.system() == "Windows" else f'bash "{script_path}"'
+                
                 env = os.environ.copy()
                 env["PYTHONUNBUFFERED"] = "1"
                 proc = subprocess.run(cmd, shell=True, cwd=self.workspace_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', text=True, env=env)
@@ -484,12 +518,89 @@ class StandardTools:
     @staticmethod
     async def read_file(system, params, resp):
         fn = params.get("filename", "")
+        instruction = params.get("instruction", "")
         path = os.path.join(system.workspace_dir, fn)
         if os.path.exists(path):
-            try:
-                with open(path, "r", encoding="utf-8") as f: return f.read()
-            except Exception as e: return f"Read Error: {e}"
+            if fn.lower().endswith(".pdf"):
+                try:
+                    from utils import PDFReader
+                    gemini_api_key = os.environ.get("JIANYI_API_KEY", "")
+                    if not gemini_api_key:
+                        return "Error: JIANYI_API_KEY not set for reading PDFs."
+                    temp_out = os.path.join(system.workspace_dir, "temp_pdf_read_result.txt")
+                    prompt = instruction + "\n" + (system.prompt_file if system.prompt_file else "You are an AI research assistant.")
+                    reader = PDFReader(api_key=gemini_api_key, system_prompt=prompt, context_window_size=1)
+                    reader.read_pdf(path, temp_out, user_prompt=instruction if instruction else "Summarize the paper's main idea.")
+                    if os.path.exists(temp_out):
+                        with open(temp_out, "r", encoding="utf-8") as f:
+                            res = f.read()
+                        os.remove(temp_out)
+                        return res
+                    return "PDF Read failed to produce output."
+                except Exception as e:
+                    return f"PDF Read Error: {e}"
+            else:
+                try:
+                    with open(path, "r", encoding="utf-8") as f: 
+                        lines = f.readlines()
+                    res = "".join([f"{i+1}: {line}" for i, line in enumerate(lines)])
+                    return res
+                except Exception as e: return f"Read Error: {e}"
         return "File Not Found."
+
+    @staticmethod
+    async def find_tool(system, params, resp):
+        keyword = params.get("keyword", "")
+        if not keyword: return "Error: keyword is empty."
+        results = []
+        for root, dirs, files in os.walk(system.workspace_dir):
+            if '.git' in root or '__pycache__' in root:
+                continue
+            for fn in files:
+                if fn.endswith(('.py', '.txt', '.md', '.bat', '.sh', '.tex')):
+                    fpath = os.path.join(root, fn)
+                    try:
+                        with open(fpath, "r", encoding="utf-8") as f:
+                            lines = f.readlines()
+                        for i, line in enumerate(lines):
+                            if keyword in line:
+                                start = max(0, i - 2)
+                                end = min(len(lines), i + 3)
+                                snippet = "".join(lines[start:end])
+                                results.append(f"File: {os.path.relpath(fpath, system.workspace_dir)} Line: {i+1}\n{snippet}")
+                    except Exception:
+                        pass
+        if not results: return "No matches found."
+        return f"Found {len(results)} matches.\n\n" + "\n---\n".join(results[:20])
+
+    @staticmethod
+    async def modify_code(system, params, resp):
+        fn = params.get("filename", "")
+        start_line = params.get("start_line", 1)
+        old_code = params.get("old_code", "")
+        new_code = params.get("new_code", "")
+        path = os.path.join(system.workspace_dir, fn)
+        if not os.path.exists(path):
+            return f"Error: File {fn} not found."
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            old_lines = old_code.splitlines(keepends=True)
+            if not old_lines: return "Error: old_code is empty."
+            start_idx = int(start_line) - 1
+            if start_idx < 0 or start_idx >= len(lines):
+                return f"Error: start_line {start_line} out of bounds."
+            actual_old = "".join(lines[start_idx:start_idx + len(old_lines)])
+            if actual_old.strip() != old_code.strip():
+                return f"Error: Code mismatch at line {start_line}.\nExpected:\n{old_code}\nActually found:\n{actual_old}"
+            new_lines = new_code.splitlines(keepends=True)
+            lines = lines[:start_idx] + new_lines + lines[start_idx + len(old_lines):]
+            with open(path, "w", encoding="utf-8") as f:
+                f.writelines(lines)
+            WorkspaceManager.git_commit_and_push_with_msg(system.workspace_dir, f"MODIFY_CODE updated {fn}")
+            return f"Successfully modified {fn} at line {start_line}."
+        except Exception as e:
+            return f"MODIFY_CODE Error: {e}"
 
     @staticmethod
     async def write_file(system, params, resp):
@@ -564,8 +675,9 @@ class AgentSystem:
         self.task_manager = TaskManager(
             max_concurrent=settings.get("max_concurrent_tasks", 3),
             workspace_dir=workspace_dir,
-            coder_model_name=settings.get("coder_model", "gemini-3-pro-preview"),
-            conda_env=settings.get("conda_env", "AutoGenOld")
+            coder_model_name=settings.get("coder_model", "gemini-3.1-pro-preview"),
+            env_type=settings.get("env_type", "None"),
+            env_name_or_path=settings.get("env_name_or_path", "")
         )
         
         # Tools & Extensibility
@@ -597,6 +709,8 @@ class AgentSystem:
         self.tool_registry.register(Tool("READ_PAPER", "读文献", StandardTools.read_paper))
         self.tool_registry.register(Tool("RECORD_DATA", "记录数据", StandardTools.record_data))
         self.tool_registry.register(Tool("FINISH_STEP", "完成计划步", StandardTools.finish_step))
+        self.tool_registry.register(Tool("FIND_TOOL", "查找内容", StandardTools.find_tool))
+        self.tool_registry.register(Tool("MODIFY_CODE", "修改代码", StandardTools.modify_code))
 
     async def _generate_plan(self, request_text):
         await cl.Message(content="🧠 **开启高级规划模式 (Multi-Step & Adversarial Planner)**\n正在进行深度环境探索与任务拆解...").send()
