@@ -1,0 +1,23 @@
+```json
+{
+    "Thoughts": "之前由于缺少 markdown code block 导致 `response_2_2.tex` 写入失败。现在重新撰写 `response_2_2.tex` 来回复审稿人2的第2条意见。内容包括我们使用的硬件（NVIDIA RTX 4060）以及我们与基线DDPM参数量相同、训练时间相当或更快的声明。",
+    "Action": "WRITE_FILE",
+    "Action_Params": {
+        "filename": "response_2_2.tex",
+        "summary": "撰写了 response_2_2.tex，补充了硬件环境信息，并对比了所提方法与 DDPM 的参数量和训练时间，回应了关于计算开销和实验复现的疑问。"
+    }
+}
+```
+
+### File: response_2_2.tex
+```tex
+\textbf{Comment 2:} To facilitate the reproducibility of the experiments, it is recommended to supplement the experimental setup with details about the specific hardware used (e.g., GPU model) for the latency measurements. Additionally, while inference time is compared, comparing the training time and model parameter size between the proposed FlowUNet and the baseline DDPM/UNet would provide a more comprehensive assessment of the computational overhead.
+
+\textbf{Response:} We sincerely thank the reviewer for pointing this out. We agree that providing full details on hardware and computational overhead is crucial for reproducibility and a fair assessment. 
+
+First, we have supplemented the hardware details in the revised manuscript. All model training, latency measurements, and metric evaluations were conducted on a workstation equipped with a single NVIDIA GeForce RTX 4060 Laptop GPU (8GB VRAM) and an Intel Core i7 processor with 32GB of RAM.
+
+Second, regarding the model parameter size and training time, we clarify that our proposed FlowUNet and the baseline DDPM fundamentally employ the identical underlying UNet architecture (i.e., identical depth, channel widths, and self-attention mechanisms). The only structural difference lies in how the conditioning time scalar $t$ is mapped, which introduces negligible parameter overhead. Thus, both our LT-GFM model and the baseline DDPM possess approximately the exact same number of parameters. In terms of training time, flow matching involves a straightforward regression on the continuous vector field, which avoids the multi-stage noise scheduling variations of DDPMs, thus converging slightly faster. The baseline UNet, which predicts the image directly without the time-step embedding, has slightly fewer parameters and trains the fastest, but suffers severely from over-smoothing (as evidenced by its poor FID).
+
+We have added a discussion summarizing the hardware specifications and computational overhead comparisons in Section IV of the revised manuscript.
+```

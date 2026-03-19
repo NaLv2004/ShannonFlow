@@ -1,0 +1,214 @@
+[2026-03-15 11:42:55] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/7693/4656680/09992015.pdf
+[2026-03-15 11:42:56] ERROR: [Error] 下载失败：HTTP 状态码 404
+[2026-03-15 11:42:56] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/twc.2022.3228326
+[2026-03-15 11:42:56] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/6287639/9312710/09491141.pdf
+[2026-03-15 11:42:57] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/7693/4656680/09992015.pdf
+[2026-03-15 11:42:58] ERROR: [Error] 下载失败：HTTP 状态码 404
+[2026-03-15 11:42:58] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/twc.2022.3228326
+[2026-03-15 11:42:58] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2406.16675
+[2026-03-15 11:42:59] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2406.16675.pdf
+[2026-03-15 11:42:59] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2406.16675.pdf
+[2026-03-15 11:42:59] INFO: [Success] PDF 下载成功: 10.1109%2Faccess.2021.3098638.pdf
+[2026-03-15 11:42:59] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Faccess.2021.3098638.pdf
+[2026-03-15 11:43:17] INFO: [Download] 尝试下载 PDF: https://pureadmin.qub.ac.uk/ws/files/606951260/main_final.pdf
+[2026-03-15 11:43:19] INFO: [Success] PDF 下载成功: 10.1109%2Fjproc.2024.3393514.pdf
+[2026-03-15 11:43:19] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Fjproc.2024.3393514.pdf
+[2026-03-15 11:44:47] INFO: [Download Info] PDF 已经存在: 10.1109%2Faccess.2021.3098638.pdf
+[2026-03-15 11:44:47] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Faccess.2021.3098638.pdf
+[2026-03-15 11:44:48] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2405.13312
+[2026-03-15 11:44:49] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2306.12367
+[2026-03-15 11:44:51] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2023.3263942 对应的 PDF 下载链接，跳过阅读。
+[2026-03-15 11:44:51] ERROR: 无法找到 DOI: https://doi.org/10.1109/JSAC.2022.3227103 对应的 PDF 下载链接，跳过阅读。
+[2026-03-15 11:44:51] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2412.20920
+[2026-03-15 11:44:51] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2405.13312.pdf
+[2026-03-15 11:44:51] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2405.13312.pdf
+[2026-03-15 11:44:51] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/8782710/9006934/10378663.pdf
+[2026-03-15 11:44:53] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2306.12367.pdf
+[2026-03-15 11:44:53] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2306.12367.pdf
+[2026-03-15 11:44:53] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2412.20920.pdf
+[2026-03-15 11:44:53] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2412.20920.pdf
+[2026-03-15 11:44:58] INFO: [Success] PDF 下载成功: 10.1109%2Fojsp.2023.3348343.pdf
+[2026-03-15 11:44:58] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Fojsp.2023.3348343.pdf
+[2026-03-15 11:45:04] INFO: [Download] 尝试下载 PDF: https://liu.diva-portal.org/smash/get/diva2:1959788/FULLTEXT01
+[2026-03-15 11:45:18] INFO: [Download] 尝试下载 PDF: https://liu.diva-portal.org/smash/get/diva2:1959788/FULLTEXT01
+[2026-03-15 11:45:19] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/7693/4656680/09992015.pdf
+[2026-03-15 11:45:19] INFO: [Success] PDF 下载成功: 10.1109%2Fjstsp.2025.3541386.pdf
+[2026-03-15 11:45:19] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Fjstsp.2025.3541386.pdf
+[2026-03-15 11:45:20] ERROR: [Error] 下载失败：HTTP 状态码 404
+[2026-03-15 11:45:20] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/twc.2022.3228326
+[2026-03-15 11:45:24] INFO: [Download Info] PDF 已经存在: 10.1109%2Fjproc.2024.3393514.pdf
+[2026-03-15 11:45:24] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Fjproc.2024.3393514.pdf
+[2026-03-15 11:45:31] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2021.3060124 对应的 PDF 下载链接，跳过阅读。
+[2026-03-15 11:45:31] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2409.06715
+[2026-03-15 11:45:34] INFO: [Success] PDF 下载成功: 10.1109%2Fjstsp.2025.3541386.pdf
+[2026-03-15 11:45:34] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Fjstsp.2025.3541386.pdf
+[2026-03-15 11:45:35] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2409.06715.pdf
+[2026-03-15 11:45:35] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2409.06715.pdf
+[2026-03-15 11:45:56] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/7693/9610145/09460784.pdf
+[2026-03-15 11:46:00] INFO: [Success] PDF 下载成功: 10.1109%2Ftwc.2021.3088125.pdf
+[2026-03-15 11:46:00] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Ftwc.2021.3088125.pdf
+[2026-03-15 11:46:12] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2309.14353
+[2026-03-15 11:46:13] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2309.14353.pdf
+[2026-03-15 11:46:13] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2309.14353.pdf
+[2026-03-15 11:46:21] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2304.13185
+[2026-03-15 11:46:21] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/7693/4656680/10127621.pdf
+[2026-03-15 11:46:23] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2304.13185.pdf
+[2026-03-15 11:46:23] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2304.13185.pdf
+[2026-03-15 11:46:27] INFO: [Success] PDF 下载成功: 10.1109%2Ftwc.2023.3275122.pdf
+[2026-03-15 11:46:27] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Ftwc.2023.3275122.pdf
+[2026-03-15 11:46:30] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/5962382/6065724/10094043.pdf
+[2026-03-15 11:46:31] ERROR: 无法找到 DOI: https://doi.org/10.1109/JSAC.2023.3287939 对应的 PDF 下载链接，跳过阅读。
+[2026-03-15 11:46:31] ERROR: 无法找到 DOI: https://doi.org/10.1109/TWC.2024.3383209 对应的 PDF 下载链接，跳过阅读。
+[2026-03-15 11:46:35] ERROR: [Error] 下载失败：HTTP 状态码 404
+[2026-03-15 11:46:35] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/lwc.2023.3265348
+[2026-03-15 11:47:04] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2502.13390
+[2026-03-15 11:47:06] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2502.13390.pdf
+[2026-03-15 11:47:06] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2502.13390.pdf
+[2026-03-15 11:47:43] INFO: [Download] 尝试下载 PDF: https://durham-repository.worktribe.com/file/2437919/1/Accepted%20Journal%20Article
+[2026-03-15 11:47:44] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-15 11:47:44] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/jsac.2024.3413981
+[2026-03-15 11:48:03] INFO: [Download] 尝试下载 PDF: https://durham-repository.worktribe.com/file/2437919/1/Accepted%20Journal%20Article
+[2026-03-15 11:48:04] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-15 11:48:04] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1109/jsac.2024.3413981
+[2026-03-15 11:51:07] INFO: [Git] 初始化 Git 仓库...
+[2026-03-15 12:05:10] INFO: [Download] 尝试下载 PDF: https://link.springer.com/content/pdf/10.1007/s11265-022-01767-2.pdf
+[2026-03-15 12:05:14] INFO: [Success] PDF 下载成功: 10.1007%2Fs11265-022-01767-2.pdf
+[2026-03-15 12:05:14] INFO: 正在交由 AI 深入阅读: pdfs\10.1007%2Fs11265-022-01767-2.pdf
+[2026-03-15 12:05:40] INFO: [Download] 尝试下载 PDF: https://ieeexplore.ieee.org/ielx7/6287639/9668973/09779241.pdf
+[2026-03-15 12:05:44] INFO: [Success] PDF 下载成功: 10.1109%2Faccess.2022.3176609.pdf
+[2026-03-15 12:05:44] INFO: 正在交由 AI 深入阅读: pdfs\10.1109%2Faccess.2022.3176609.pdf
+[2026-03-15 12:06:02] ERROR: 无法找到 DOI: https://doi.org/10.1109/access.2025.3527028 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:00:00] ERROR: 无法找到 DOI: https://doi.org/10.48550/arXiv.2210.02747 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:00:00] ERROR: 无法找到 DOI: https://doi.org/10.48550/arXiv.2302.00482 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:00:05] ERROR: 无法找到 DOI: https://doi.org/10.48550/arXiv.2210.02747 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:00:05] ERROR: 无法找到 DOI: https://doi.org/10.48550/arXiv.2302.00482 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:10] INFO: [Download] 尝试下载 PDF: https://dl.acm.org/doi/pdf/10.1145/3570361.3592527
+[2026-03-16 01:01:11] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-16 01:01:11] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1145/3570361.3592527
+[2026-03-16 01:01:12] ERROR: 无法找到 DOI: https://arxiv.org/abs/2412.03151 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:12] ERROR: 无法找到 DOI: https://arxiv.org/abs/2411.01899 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:17] INFO: [Download] 尝试下载 PDF: https://www.techrxiv.org/doi/pdf/10.36227/techrxiv.174552769.93526625/v1
+[2026-03-16 01:01:18] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-16 01:01:18] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.36227/techrxiv.174552769.93526625/v1
+[2026-03-16 01:01:20] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2412.20885
+[2026-03-16 01:01:21] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2412.20885.pdf
+[2026-03-16 01:01:21] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2412.20885.pdf
+[2026-03-16 01:01:23] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2411.18635
+[2026-03-16 01:01:27] ERROR: 无法找到 DOI: https://arxiv.org/abs/2412.03151 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:27] ERROR: 无法找到 DOI: https://arxiv.org/abs/2411.01899 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:29] ERROR: 无法找到 DOI: https://arxiv.org/abs/2510.09314 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:29] ERROR: 无法找到 DOI: https://arxiv.org/abs/2402.04845 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:29] ERROR: 无法找到 DOI: https://doi.org/10.1109/jiot.2023.3289728 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:31] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2411.18635.pdf
+[2026-03-16 01:01:31] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2411.18635.pdf
+[2026-03-16 01:01:35] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2509.13822
+[2026-03-16 01:01:41] INFO: [Download] 尝试下载 PDF: https://www.techrxiv.org/doi/pdf/10.36227/techrxiv.174552769.93526625/v1
+[2026-03-16 01:01:41] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2509.13822.pdf
+[2026-03-16 01:01:41] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2509.13822.pdf
+[2026-03-16 01:01:43] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-16 01:01:43] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.36227/techrxiv.174552769.93526625/v1
+[2026-03-16 01:01:43] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2406.14995
+[2026-03-16 01:01:52] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2406.14995.pdf
+[2026-03-16 01:01:52] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2406.14995.pdf
+[2026-03-16 01:01:55] ERROR: 无法找到 DOI: https://arxiv.org/abs/2510.09314 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:55] ERROR: 无法找到 DOI: https://arxiv.org/abs/2402.04845 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:58] ERROR: 无法找到 DOI: https://arxiv.org/abs/2412.03151 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:01:58] ERROR: 无法找到 DOI: https://arxiv.org/abs/2411.01899 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:02:32] ERROR: 无法找到 DOI: https://arxiv.org/abs/2510.09314 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:02:32] ERROR: 无法找到 DOI: https://arxiv.org/abs/2402.04997 对应的 PDF 下载链接，跳过阅读。
+[2026-03-16 01:02:47] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2510.09314
+[2026-03-16 01:02:49] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2510.09314.pdf
+[2026-03-16 01:02:49] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2510.09314.pdf
+[2026-03-16 01:03:25] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2510.09314.pdf
+[2026-03-16 01:03:25] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2510.09314.pdf
+[2026-03-16 01:03:30] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2406.14995.pdf
+[2026-03-16 01:03:30] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2406.14995.pdf
+[2026-03-16 01:04:23] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2509.13822.pdf
+[2026-03-16 01:04:23] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2509.13822.pdf
+[2026-03-16 01:09:55] INFO: [Git] 初始化 Git 仓库...
+[2026-03-16 15:54:15] INFO: [Git] 初始化 Git 仓库...
+[2026-03-17 00:03:46] INFO: [Git] 初始化 Git 仓库...
+[2026-03-17 00:13:38] INFO: Loading state...
+[2026-03-17 00:15:40] INFO: State loaded
+[2026-03-17 00:17:55] INFO: Loading state...
+[2026-03-17 00:17:55] INFO: State loaded
+[2026-03-17 00:33:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:33:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:33:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:33:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:33:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:33:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:33:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:33:54] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:33:54] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:34:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:34:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:34:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:34:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:34:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:08] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:37] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:37] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:37] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-17 00:35:37] ERROR: [TaskManager] Failed to send message: Chainlit context not found
