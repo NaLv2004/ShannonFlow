@@ -4,7 +4,7 @@ import json
 import chainlit as cl
 from cli_async_basic import AgentSystem, BaseContextBuilder, Tool, StandardTools, WorkspaceManager
 
-from prompts import GENERATE_CODE_PROMPT, CODER_STUDENT_PLAN_PROMPT, CODER_TEACHER_PLAN_PROMPT, CODER_STUDENT_PLAN_PROMPT_REVIEW, GENERATE_CODE_PROMPT_WITH_PLAN
+from prompts import GENERATE_CODE_PROMPT_WITH_PLAN, CODER_STUDENT_PLAN_PROMPT, CODER_TEACHER_PLAN_PROMPT
 
 class CodeContextBuilder(BaseContextBuilder):
     def build_context(self, system, request_text, active_tasks_info, finished_tasks_info, workspace_tree, hardware_status):
@@ -62,7 +62,7 @@ async def run_generate_code(workspace_dir, user_request, settings):
     interrupt_event = cl.user_session.get("interrupt_event")
     user_reqs = cl.user_session.get("user_interrupt_requests")
     
-    system = GenerateCodeSystem(workspace_dir, settings, interrupt_event, user_reqs, student_planner_prompt=CODER_STUDENT_PLAN_PROMPT_REVIEW, teacher_critic_prompt=CODER_TEACHER_PLAN_PROMPT)
+    system = GenerateCodeSystem(workspace_dir, settings, interrupt_event, user_reqs, student_planner_prompt=CODER_STUDENT_PLAN_PROMPT, teacher_critic_prompt=CODER_TEACHER_PLAN_PROMPT)
     system.adversarial_mode = False
     system.max_plan_iterations = 15
     system.context_builder = CodeContextBuilder()

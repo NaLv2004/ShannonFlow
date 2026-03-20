@@ -12,7 +12,7 @@
     }
   },
   "WRITE_FILE": {
-    "description": "创建或覆写一个文件。只能是txt或tex等文本文件，不可替代Coder写代码(代码由CODER写)。必须在JSON外部附带Markdown代码块。",
+    "description": "创建或覆写一个文件。只能是txt或tex等文本文件。必须在JSON外部附带Markdown代码块。",
     "params": {
       "filename": "提供所需创建的文件名"
     }
@@ -70,7 +70,7 @@
     }
   },
   "SPAWN_RUN": {
-    "description": "下发运行一个任意操作系统的控制台命令或脚本。若是linux为bash，windows则为bat。会自动将python加入到前缀依赖并带实时控制台监控输出。",
+    "description": "下发运行一个任意操作系统的控制台命令或脚本。若当前系统是linux为bash，windows则为bat。会自动将python加入到前缀依赖并带实时控制台监控输出。",
     "params": {
       "run_script": "完整的批处理/bash命令内容本身文字（而不是文件名）"
     }

@@ -1,0 +1,225 @@
+{
+  "Thoughts": "通过前面的研究，我们已经构建了从空间坐标连续化、物理先验融合、多维张量预测到多模态跨界融合（Vision-RF）的完善CKM重构体系。但在将算法推向真实的6G现网部署时，我发现了两个核心的‘系统级阻碍’：\n1. 众包数据的硬件异构性（Hardware Heterogeneity）：现实中，众包数据由成千上万种不同型号的手机、IoT设备采集。不同设备的天线增益、LNA噪声系数、人体遮挡损耗（Body Loss）完全不同。如果不做区分直接输入流匹配模型，生成的图谱将被严重的设备偏差（Device Bias）污染。\n2. 环境的可编程性（Programmable Environments）：6G引入了可重构智能表面（RIS）。环境不再是静态的，信道图谱 $H$ 变成了关于RIS相控矩阵 $\\Phi$ 的函数。由于 $\\Phi$ 的状态空间极大（如 $2^N$），我们不可能为每种状态收集数据并重新训练图谱模型。\n为此，我提出 Idea 14 (HD-CFM)：利用解耦表征学习剥离硬件损伤，提取纯粹的电磁图谱；以及 Idea 15 (RIS-Control-FM)：借鉴图像生成领域的 ControlNet 架构，将 RIS 相位矩阵作为控制变量注入流匹配，实现对‘可编程无线环境’的 Zero-shot 图谱渲染。",
+  "SearchQueries": [
+    "Uncalibrated crowdsourcing channel map hardware impairment disentanglement",
+    "Reconfigurable intelligent surface RIS channel mapping generative models",
+    "ControlNet physics-informed neural networks spatial modulation",
+    "Device-agnostic radio map reconstruction federated learning"
+  ],
+  "PapersToRead": [],
+  "FilesToRead": [],
+  "Ideas": [
+    {
+      "Name": "INR-Hyper-CFM",
+      "Title": "Hypernetwork-driven Continuous Coordinate Flow Matching for Off-Grid Radio Mapping",
+      "Background": "现有的CKM超分重建假设测量数据分布在规则网格上。然而，实际无线环境中的CSI/RSRP通常由随机移动的UE采集，属于‘非规则、随机、稀疏’采样。强制插值至网格中会导致大量伪影并破坏局部特征。",
+      "Hypothesis": "我们假设无需显式地将稀疏点投影为二维特征图输入UNet。可以通过一个基于Transformer的超网络（Hypernetwork）直接读取无序的稀疏测量集 (x_i, y_i, v_i)，并输出隐式神经表示（INR）的权重。该INR作为连续条件函数被注入到Flow Matching中，引导任何分辨率下的去噪过程。",
+      "Methodology": "1. 稀疏集编码：利用Set Transformer处理动态数量的离网格测点，输出隐变量。\n2. 动态INR生成：隐变量通过Hypernetwork生成小型MLP的权重。\n3. 空间自适应注入：将INR在特定网格上求值得到的连续特征，通过SPADE层注入到UNet中。训练时随机屏蔽真实数据，推理时即可实现对任意随机采样的平滑重构。"
+    },
+    {
+      "Name": "Dual-Branch-Phys-FM",
+      "Title": "Physics-Guided Dual-Branch Flow Matching for Hallucination-Free Channel Map Reconstruction",
+      "Background": "信道大尺度衰落主要受距离和建筑物遮挡主导。在极端稀疏采样的盲区，纯数据驱动的生成模型极易产生不符合电磁波传播规律的幻觉（如穿墙高增益）。",
+      "Hypothesis": "流匹配预测的向量场可以被解耦为：由物理先验主导的“决定性大尺度向量场”和由数据驱动的“随机多径残差向量场”。将物理规律作为先验引入，可在稀疏采样时提供物理“托底”。",
+      "Methodology": "1. 伪射线追踪场：利用发射机位置和建筑Mask，通过图搜索计算出包含衍射惩罚的非欧几里得距离场，生成基础路损图谱。\n2. 向量场解耦：定义向量场网络 v_theta = v_phys(Mask) + v_residual(Sparse_Data)。v_phys引导数据流向符合物理的大方向。\n3. 残差拟合：网络仅拟合物理模型无法解释的复杂衰落，极大降低极端稀疏条件下的学习难度。"
+    },
+    {
+      "Name": "Sparse-DiT-FM",
+      "Title": "Diffusion Transformer Flow Matching with Sparse Coordinate Tokenization for Radio Mapping",
+      "Background": "传统生成式流匹配依赖图像网格。随机分布的离网格测点破坏了平移不变性，使CNN难以提取局部特征，且需要大量零填充。",
+      "Hypothesis": "借鉴DiT架构，通过将每个随机测点及其空间坐标视为独立的Token（采用连续二维旋转位置编码 2D-RoPE），配合环境建筑的Patch Tokens，利用纯Transformer直接对无序稀疏条件进行Flow Matching。",
+      "Methodology": "1. 异构Token化：建筑Mask与生成目标被Patch化；稀疏测点通过线性层与2D-RoPE直接转为Condition Tokens。\n2. Transformer流匹配：采用DiT架构完全替代UNet，Tokens在内部通过全局自注意力自由交互。\n3. 复杂场景泛化：彻底消除网格化量化误差，完美自适应任意数量、任意动态拓扑分布的随机测点。"
+    },
+    {
+      "Name": "NO-FM",
+      "Title": "Neural Operator Flow Matching for Resolution-Free Radio Wavefield Generation",
+      "Background": "无线信道是由偏微分方程主导的空间连续电磁波场。现有AI方法在离散像素下学习，无法捕捉波的频域衍射特性，且推理分辨率受限。",
+      "Hypothesis": "将Fourier Neural Operator (FNO) 与 Flow Matching 结合。FNO在频域内能天然处理非规则坐标输入并学习物理算子映射，从而实现真正的无限分辨率无线场重构。",
+      "Methodology": "1. 频域特征提取：利用积分变换，将离网格稀疏采样点直接映射为频域特征。\n2. FNO向量场预测：用时间条件FNO替代UNet，通过截断高频成分并线性变换，捕捉电磁波传播与衍射特征。\n3. 连续ODE求解：在低分辨率下利用掩码稀疏点训练后，可在Zero-shot条件下推理直接渲染极高分辨率图谱。"
+    },
+    {
+      "Name": "Uncertainty-OT-FM",
+      "Title": "Uncertainty-Aware Data Assimilated Flow Matching for Robust CKM Reconstruction",
+      "Background": "众包测量受设备灵敏度和噪声影响，信噪比存在差异。标准生成模型将所有条件输入一视同仁，无法严格遵循高置信度观测值。",
+      "Hypothesis": "结合数据同化思想，在推理阶段引入带有动态方差阈值的测点梯度注入，不仅能让高质量测点起到绝对锚点作用，还能自动过滤劣质测量的误导。",
+      "Methodology": "1. 不确定性建模：稀疏采样点输入扩展为 (x_i, y_i, v_i, \\sigma_i)，\\sigma_i 为硬件相关的测量方差。\n2. 动态梯度引导：在ODE演化过程中，每步积分后计算当前生成图谱与观测值的误差。\n3. 卡尔曼风格校正：利用 1/\\sigma_i 对生成场进行梯度修正。置信度高的测点被强制拟合，噪声大的允许平滑过渡，纯推理期插拔式验证。"
+    },
+    {
+      "Name": "PA-CA-P2G-FM",
+      "Title": "Propagation-Aware Cross-Attention Point-to-Grid Flow Matching",
+      "Background": "离散稀疏点云融合到网格时，欧氏距离交叉注意力会发生穿墙泄漏（NLoS Leakage），导致物理阻隔的两点发生不合理的特征交互。",
+      "Hypothesis": "在交叉注意力中引入‘传播距离’（绕过建筑物的最短路径距离）作为拓扑掩码偏置，可让网格像素符合物理直觉地提取点云特征，完美解决NLoS泄漏，且对U-Net主干改动极小。",
+      "Methodology": "1. 物理拓扑图：利用快速行进算法预计算任意测点到全图像素的传播距离矩阵。\n2. 传播感知位置编码：将传播距离映射为Relative Positional Bias，加入注意力权重计算：Attention = Softmax(Q K^T + Bias) V。\n3. 特征注入：稀疏测点转为Tokens (K, V)，U-Net中间特征为 Q。墙后的像素无法获取墙前信息，迫使模型学习绕射规律。"
+    },
+    {
+      "Name": "Traj-Grad-FM",
+      "Title": "Trajectory-Gradient Constrained Flow Matching via Sobolev Matching",
+      "Background": "实际无人机或众包数据沿轨迹连续采集，包含信道在空间上的变化率（梯度），而现有方法往往将其拆解为独立散点，丢弃了导数信息。",
+      "Hypothesis": "如果在Flow Matching中引入Sobolev空间范数约束，迫使模型不仅拟合幅度，更学会真实的信道空间波动率（如等效空间多普勒起伏），将大幅增强盲区的推断能力。",
+      "Methodology": "1. 轨迹梯度估计：利用连续采样序列，通过有限差分估计每个点的空间方向导数。\n2. Sobolev流匹配损失：对预测向量场增加梯度正则化损失，要求重构过程中的空间导数与观测导数对齐。\n3. 物理先验：等效于引入信道的空间自相关先验。实验可对比仅用散点与加入梯度的泛化能力差异。"
+    },
+    {
+      "Name": "Jakes-Prior-FM",
+      "Title": "Correlated-Prior Flow Matching with Jakes Spatial Covariance for Fast Fading Maps",
+      "Background": "在处理包含小尺度（快）衰落的高分辨率信道图谱时，生成模型通常从标准高斯白噪声开始映射。然而，无线电磁波的快衰落具有严格的物理空间相关性，其空间自相关函数服从第一类零阶贝塞尔函数（Jakes模型）。",
+      "Hypothesis": "如果将Flow Matching的目标分布与‘物理空间协方差’对齐，即把先验噪声替换为具有Jakes空间相关性的高斯过程，那么ODE的初始状态就已经天然具备了电磁波的高频干涉纹理。向量场只需学习调整这些波纹的宏观相位和包络。",
+      "Methodology": "1. 相关先验采样：利用快速傅里叶变换(FFT)生成满足 J_0 相关性的二维随机衰落场作为 ODE 的起始点 x_0。\n2. 目标流匹配重构：修改 CFM 的目标概率路径，使其在相关高斯过程和真实CKM分布之间建立最优传输。\n3. 物理减负：起点的“底噪”已具备物理纹理，UNet/DiT 拟合负担大幅降低，极少数据量下也能重构出具备准确多普勒特性的快衰落场。"
+    },
+    {
+      "Name": "4D-Pred-ST-FM",
+      "Title": "Predictive Spatio-Temporal Flow Matching for Dynamic CKM Forecasting",
+      "Background": "现有的CKM重构大多局限于“静态切片”。在车联网或无人机场景中，散射体环境不断变化，导致信道图谱在时间维度上呈现复杂的演化特性。",
+      "Hypothesis": "将信道预测转化为时空连续的生成任务。使用连续时间条件(Time-conditioned)的三维流匹配模型，不仅接收当前的稀疏测量点和环境掩码，还接收过去的移动轨迹，从而‘生成（预测）’未来信道图谱的演化。",
+      "Methodology": "1. 时空联合条件化：将条件变量扩展为时间序列，包含动态物体的轨迹和稀疏测点。\n2. 时空向量场：设计基于3D-UNet或Video-DiT的向量场网络，生成包含时间维度的3D时空信道张量。\n3. 未来演化映射：Flow Matching 映射到物理上时空一致的未来信道衰落视频，同时解决空间非均匀采样和时间域的信道预测空白。"
+    },
+    {
+      "Name": "X-Band-FM",
+      "Title": "Multi-Fidelity Cross-Band Flow Matching for mmWave/THz Map Extrapolation",
+      "Background": "6G网络横跨Sub-6GHz、mmWave及THz等异构频段。高频段（如mmWave）信道图谱极难低成本获取且极其稀疏，而低频段（Sub-6GHz）则易于实现全覆盖测量。由于衍射和穿透损耗的非线性频率依赖性，传统的跨频段线性外推往往失效。",
+      "Hypothesis": "低频段的信道图谱包含了物理环境中宏观散射体（如建筑、街道）的完整结构（低频结构先验）。通过将Sub-6GHz图谱作为全局条件输入Flow Matching模型，再结合极少量的mmWave稀疏锚点，我们可以训练模型学习‘频率相关的物理差异’（如高频下阴影边缘更锐利、绕射消失），实现向高频段的高保真图谱转换。",
+      "Methodology": "1. 跨模态输入：将全覆盖的Sub-6GHz信道图（可通过传统插值或现有模型廉价获得）作为图像特征，与mmWave稀疏测点共同构建条件向量 C。\n2. 频率嵌入：目标频率 f_target 作为一个标量，通过位置编码(Positional Encoding)和FiLM层注入向量场网络，指导网络调整衰减和衍射强度。\n3. 多保真度生成：模型在训练中学习不同频率间的联合分布，推理时即便只有1%的mmWave测点，也能依靠Sub-6GHz的结构支撑完美生成mmWave信道全貌。"
+    },
+    {
+      "Name": "Active-CFM",
+      "Title": "Uncertainty-Guided Active Conditional Flow Matching for Autonomous UAV Exploration",
+      "Background": "现有的CKM研究通常假设稀疏测量点是静态给定的。但在现实中，我们通常需要派遣无人机(UAV)或测量车去主动收集数据。如何在最短的路径/最少的采样点下，获得最高精度的全局CKM？",
+      "Hypothesis": "生成式Flow Matching模型本质上拟合了在给定条件下的后验概率分布 p(Map | Sparse_Points)。通过多次反向ODE采样，我们可以计算出图谱中每个像素的认识不确定性（Epistemic Uncertainty/方差）。这为无人机提供了一个天然的‘信息增益地图’，指导其飞向方差最大的区域进行下一次测量。",
+      "Methodology": "1. 后验方差评估：给定当前无人机已采集的 n 个点，CFM模型生成 K 张候选信道图谱，计算像素级方差，生成 Uncertainty Map。\n2. 信息驱动的路径规划(Informative Path Planning)：将Uncertainty Map输入强化学习(RL)或模型预测控制(MPC)规划器，寻找一条最大化方差削减且满足飞行能耗约束的下一阶段轨迹。\n3. 动态闭环系统：无人机到达新位置采集数据后，立即更新条件点集输入到CFM中。这种‘采样-生成-规划-采样’的闭环主动学习框架，能以最少的物理测量代价实现区域信道地图的完全勘探。"
+    },
+    {
+      "Name": "Latent-Beam-FM",
+      "Title": "Latent Flow Matching for Spatio-Angular Power Delay Profile Reconstruction",
+      "Background": "6G毫米波/太赫兹系统极度依赖波束赋形。传统的CKM仅提供单一的标量功率（RSRP），但这不足以指导基站进行波束对齐。我们需要预测的是空间任意位置的‘角度-时延功率谱（PDAP）’，这是一个高维张量，直接在空间域上插值或生成高维张量的计算代价不可接受。",
+      "Hypothesis": "高维的射频多径张量实际上驻留在一个由少数主导簇（Clusters）决定的低维物理流形上。我们假设可以利用Latent Diffusion Models (如Stable Diffusion) 的思想，先将PDAP压缩到低维隐空间，然后在该隐空间内执行Flow Matching，从而高效重构整个区域的波束空间矩阵。",
+      "Methodology": "1. 射频张量压缩：训练一个连续自编码器(Autoencoder)，将测点上收集到的高维波束张量(AoA, AoD, Delay)压缩为低维的Latent Channel Vector。\n2. 隐式流匹配 (Latent Flow Matching)：Flow Matching模型的任务不再是生成标量图像，而是接收(x,y)坐标和环境Mask作为条件，预测全空间网格上‘Latent Vectors的演化向量场’。\n3. 零开销波束对齐：在盲区推理时，模型解算ODE得到该位置的Latent Vector，然后通过解码器(Decoder)瞬间还原出完整的到达角与出发角分布。这使得移动车辆可以在到达该点前实现‘零探测开销’的精准波束切换。"
+    },
+    {
+      "Name": "Vision-RF-CFM",
+      "Title": "Cross-Modal Visual-Semantic Prompted Flow Matching for Material-Aware Radio Mapping",
+      "Background": "现有物理信道建模高度依赖简单的二值化建筑Mask（空气或障碍），这忽略了建筑材质（如玻璃幕墙的强反射、混凝土的高衰减、树叶的随机体散射）对电磁波带来的巨大影响。然而，精准的3D材质电磁数据库几乎无法获取。",
+      "Hypothesis": "多模态大模型和视觉基础模型（如CLIP/SAM）能够直接从广泛且廉价的光学图像（如卫星图或街景图）中提取出隐式的材质与结构语义。将这些‘视觉语义Embedding’作为Prompt注入到流匹配模型中，网络能够自动学习‘视觉纹理’与‘射频散射物理’之间的跨模态映射关系。",
+      "Methodology": "1. 语义Prompt提取：使用预训练的Vision Transformer (ViT) 对目标区域的光学遥感图进行编码，提取密集的视觉语义Token映射图。可以结合天气信息的Text Prompt（如“下雨”、“落叶”）。\n2. 跨模态注意力注入：在CKM Flow Matching骨干网络中引入Cross-Attention层。生成信道图谱时，网络将当前生成的RF特征作为Query，去检索ViT提取的Visual Tokens。\n3. 材质感知推演：无需人工指定介电常数，模型能够自动意识到“玻璃反光区域”会产生强劲的反射，或“森林区域”会导致信号衰减。打破通信与计算机视觉的壁垒。"
+    },
+    {
+      "Name": "HD-CFM",
+      "Title": "Hardware-Disentangled Flow Matching for Uncalibrated Crowdsourced Radio Mapping",
+      "Background": "构建CKM的最低成本方式是利用海量用户的众包数据。但真实用户的设备型号繁多，天线增益、噪声系数(NF)和人体遮挡(Body Loss)各异。直接将这些未校准的测量值混合输入AI模型，会导致生成的信道图谱严重偏离真实的物理电磁环境。",
+      "Hypothesis": "观测到的信道读数是“纯粹空间电磁特征”与“设备特定硬件损伤”的耦合。我们假设通过在Flow Matching框架中引入条件对比学习（Conditional Contrastive Learning），可以将设备的硬件签名（Hardware Signature）从空间信道特征中完全解耦（Disentangle），从而恢复出设备无关的规范信道图谱（Device-Agnostic CKM）。",
+      "Methodology": "1. 硬件表征嵌入：为每条众包数据引入设备元信息（如iPhone 15, IoT Node_A），通过嵌入层(Embedding Layer)生成设备的 Latent Hardware Vector。\n2. 解耦流匹配：FM模型的向量场不仅以外部坐标为条件，同时以 Hardware Vector 为条件。训练时，模型在正向生成真实物理图谱后，通过一个可导的“虚拟硬件畸变层(Hardware Distortion Layer)”计算当前特定设备的读数误差。\n3. 零样本校准 (Zero-Shot Calibration)：在推理（重构盲区）阶段，我们将 Hardware Vector 强制置为“理想全向天线/无损接收机”的Embedding。此时FM模型渲染出的就是剔除了所有硬件偏置的纯电磁空间传播图谱。"
+    },
+    {
+      "Name": "RIS-Control-FM",
+      "Title": "ControlNet-Enhanced Flow Matching for Programmable Radio Environments",
+      "Background": "6G引入了可重构智能表面（RIS）技术。环境从“被动散射”变成了“主动可编程”。这意味着同一地点的信道图谱 $H$ 成为了RIS相位控制矩阵 $\\Phi$ 的函数。传统方法无法为状态空间高达 $2^N$ 的可变环境预先训练静态的CKM。",
+      "Hypothesis": "借鉴图像生成领域的 ControlNet 思想，我们假设无需重新训练庞大的基础流匹配网络，只需将 RIS 相位矩阵 $\\Phi$ 作为一种外挂的“空间控制条件”，通过轻量级的适配器(Adapter)网络去调节FM网络中各层的特征响应，就能让模型学会 RIS 所引发的级联（LoS-RIS-NLoS）散射物理规律。",
+      "Methodology": "1. 基础环境锁定：首先在关闭RIS（或随机相位）的条件下，训练一个描述当前宏观大尺度衰落的基础 Flow Matching 模型，随后冻结其主干网络权重。\n2. RIS Control Adapter 训练：构建一个轻量级的编码器，接收物理空间中 RIS 的位置坐标以及当前的相位配置矩阵 $\\Phi$。其输出与基础FM网络的多尺度特征图进行残差相加(Zero-Convolution注入)。\n3. 可编程图谱渲染：推理时，基站或控制器输入任意一种尚未见过的 RIS 赋形方案 $\\Phi$，FM模型瞬间重构出该赋形方案下的全局信道图谱。这为闭环联合优化（RIS相移优化+基站波束赋形）提供了上帝视角的数字孪生信道环境。"
+    }
+  ]
+}
+
+
+{
+  "Thoughts": "通过补充检索，我发现：在当前的无线通信与CKM研究中，结合“流匹配（Flow Matching）”、“联邦学习（Federated Learning）”以及“任务导向（Task-oriented/Goal-oriented）”的交叉地带仍然是一片蓝海。大部分现有的CKM工作仅仅停留在“更准确地重建物理信道（CSI/Pathloss）”这一中间步骤，但在实际的6G自动驾驶网络或无人机（UAV）集群中，最终的目标是进行决策（如：波束选择、越区切换、轨迹规划）。此外，众包数据的获取不可避免地涉及到用户位置（Location）与轨迹（Trajectory）的隐私泄露问题。传统的联邦学习在处理不同用户终端上传的不同分辨率、非结构化网格数据时面临巨大挑战。\n\n因此，我将提出两个全新的颠覆性Idea：\n1. 联邦泛函流匹配（Fed-Functional-FM）：解决非结构化异构数据的隐私保护众包问题；\n2. 任务导向的决策图谱生成（Task-Oriented-CKM）：跳过物理信道重建，直接使用奖励引导（Reward-guided）流匹配生成“最优动作图谱（Action Map）”。\n\n这13个Idea现已构成了一个从底层物理（波动方程、近场、逆散射）、环境编程（RIS）、数据获取（众包、隐私、异质噪声）到顶层应用（跨频段、时空动态、任务决策）的完整、闭环且极具前瞻性的 6G CKM 理论体系。",
+  "SearchQueries": [
+    "\"Federated Learning\" AND \"Fourier Neural Operator\"",
+    "\"Reward guided\" AND \"Flow Matching\"",
+    "\"Decision Map\" AND \"Wireless\" AND \"Generative\""
+  ],
+  "PapersToRead": [],
+  "FilesToRead": [],
+  "Ideas": [
+    {
+      "Name": "Sparse-Set-CFM",
+      "Title": "Set-Conditioned Flow Matching for Non-Uniformly Sampled Channel Knowledge Map Reconstruction",
+      "Background": "现有的条件流匹配在信道图谱重构中多采用U-Net架构，要求输入必须是规则网格。然而，实际众包信道测量数据在空间上是高度非均匀的。若预先插值会引入平滑误差并破坏深衰落特征。",
+      "Hypothesis": "将随机采样的信道测量值视为无序集合，利用置换不变的Perceiver IO架构提取固定维度的全局上下文表征，作为Cross-Attention条件注入到流匹配U-Net中，可消除对插值算法的依赖。",
+      "Methodology": "1. 编码：将随机采样点输入Perceiver IO，映射为固定长度的Latent向量 $Z_c$；\n2. 生成：在速度场网络（U-Net）的各层，将空间特征与 $Z_c$ 进行交互；\n3. 验证：此方法作为基线过渡方案，解决了输入端离散采样问题，但输出端仍受限于网格分辨率。"
+    },
+    {
+      "Name": "Operator-CFM-CKM",
+      "Title": "Neural Operator Flow Matching for Infinite-Resolution Continuous Channel Maps",
+      "Background": "为满足高频通信对亚米级精度信道图谱的需求，模型需要突破像素网格的限制。纯坐标驱动的INR模型存在泛化能力弱的问题。",
+      "Hypothesis": "引入算子流匹配（Operator Flow Matching, OFM），将模型升级为学习‘函数到函数’的映射。通过将流匹配定义在连续的泛函空间中，模型可以直接接受任意密度的离散采样作为输入函数，并输出在任意坐标点皆可查询的连续信道响应函数。",
+      "Methodology": "1. 架构：采用神经算子（如DeepONet或Fourier Neural Operator的变体）作为速度场网络 $v_\\theta(S_t, t | \\mathcal{D}_{obs})$，其中 $\\mathcal{D}_{obs}$ 是离散观测集合；\n2. 训练：在连续坐标系中随机采样查询点，独立计算各点的向量场匹配Loss（条件独立流匹配）；\n3. 推理：无需设定固定的输出分辨率，针对任意给定的目标坐标组并行求解ODE，实现连续空间的信道预测。"
+    },
+    {
+      "Name": "Boundary-Aware-INR-CFM",
+      "Title": "Geometry-Aware Continuous Flow Matching for Sharp Shadowing Reconstruction",
+      "Background": "由于神经网络的谱偏差，在连续空间重构时，模型容易在建筑物遮挡的非连续边界处（LoS与NLoS交界）出现过度平滑，无法还原锐利的阴影衰落。",
+      "Hypothesis": "利用建筑掩码计算出连续的符号距离函数（SDF），将其作为空间几何先验。通过空间自适应归一化（SPADE）或条件位置编码将其注入到逐点流匹配网络中，可引导流匹配在跨越建筑物边界时产生剧烈的梯度变化。",
+      "Methodology": "1. 预处理：计算每个坐标点到最近建筑物边缘的SDF值；\n2. 注入速度场：将SDF值融合进模型 $v_\\theta(S_t, t | p_j, SDF(p_j), Z_c)$，使其具备“物理遮挡感知”能力；\n3. 损失函数：在训练时，针对 $|SDF(p_j)| < \\epsilon$ （即靠近物理边缘区域）的采样点赋予动态增加的Loss权重，强制拟合复杂的绕射特性。"
+    },
+    {
+      "Name": "Prior-Shifted-CFM",
+      "Title": "Multi-Fidelity Flow Matching: Fusing Dense Empirical Pathloss with Sparse Random Samples",
+      "Background": "在极度稀疏的采样场景（如建筑物后方全盲区）中，完全从纯噪声生成信道图谱会导致严重的物理幻觉。",
+      "Hypothesis": "改变流匹配的标准高斯起点，将“粗糙但全局连续的经验路损模型（如3GPP UMi）”作为常微分方程的起点 $p_0$，真实高分辨率图谱作为终点 $p_1$。此时流匹配只需学习真实的‘物理残差’，极大增强了模型在盲区的鲁棒性。",
+      "Methodology": "1. 构造基准分布：$S_0(p) = \\text{Empirical\\_Pathloss}(p) + \\text{Noise}$；\n2. 最优传输：构建从经验路损分布到真实测量分布的最优传输流（OT-Flow）；\n3. 融合生成：模型速度场在此基础上进行残差演化，即使在没有采样点的死角，生成结果也天然具有合理的物理下限。"
+    },
+    {
+      "Name": "Hard-Constrained-CFM",
+      "Title": "Zero-Error Proximal Flow Guidance for Exact CKM Interpolation",
+      "Background": "生成式模型固有的去噪平滑效应会改变已知测量点上的真实测量值（软约束问题）。在工程上，已知的真实数据点必须被100%忠实地保留。",
+      "Hypothesis": "无需重新训练模型，只需在推理求解ODE的过程中引入近端流引导（Proximal Flow Guidance），将已知观测点的预测误差梯度反向传播给速度场，即可实现零误差的硬约束精确插值。",
+      "Methodology": "1. 前向积分：在ODE求解的每一个时间步 $t$，获取当前信道状态 $S_t$；\n2. 测量一致性引导：在离散的已知采样点集上，计算 $S_t$ 映射到最终数据时与真实测量值的残差（Data Consistency Loss）；\n3. 向量场修正：利用该残差相对于当前状态的梯度 $\\nabla_{S_t} \\mathcal{L}_{obs}$，对神经网络输出的速度场进行实时修正，从而强迫ODE轨迹在 $t=1$ 时精确击中真实的观测数值。"
+    },
+    {
+      "Name": "Joint-Permittivity-OFM",
+      "Title": "Base-Station-Agnostic CKM Generation via Inverse Scattering Operator Flow Matching",
+      "Background": "现有方法生成的都是特定基站位置下的信道图谱。一旦基站移动或引入新的无人机节点，模型必须重新预测。物理世界中真正的基站位置不变量（Invariant）是环境介电常数分布。",
+      "Hypothesis": "摒弃直接生成信道图谱的思路，转而使用算子流匹配生成城市的『介电常数（Permittivity）隐式空间分布场』。在推理阶段，利用少量基站的稀疏CSI观测进行后验引导，还原出真实的物理环境介质场。一旦介质场确立，任何新部署的基站均可通过可微正向波传播器实现Zero-Shot的信道图谱预测。",
+      "Methodology": "1. 隐式场生成：训练OFM网络学习城市建筑介电分布 $\\epsilon(x,y)$ 的无条件概率泛函流；\n2. 可微正向映射：利用可微的射线追踪或快速亥姆霍兹求解器，构建 $H(x, y) = F_{solver}(\\epsilon(x,y), BS_{pos})$；\n3. 观测引导逆散射：输入少量已知基站的测量点，通过流形向后计算梯度 $\\nabla_\\epsilon \\mathcal{L}(F_{solver}(\\epsilon), CSI_{obs})$，引导 ODE 轨迹逼近真实的介质分布；\n4. 泛化应用：利用生成的 $\\epsilon(x,y)$，无需再次采样即可为场景内任意坐标的新发射源生成高精度 CKM。"
+    },
+    {
+      "Name": "Bayesian-Hetero-OFM",
+      "Title": "Uncertainty-Aware Operator Flow Matching for Heterogeneous Hardware Impairments in Crowdsourced CKM",
+      "Background": "众包信道数据来源于不同终端（低成本IoT、旧款手机、专业测试仪），具有未知的异质测量噪声（Hardware Impairments）。确定性的生成模型无法区分哪些采样点可信，哪些是高噪声的离群点。",
+      "Hypothesis": "基于算子流匹配（OFM）进行随机过程学习，构建贝叶斯后验估计。引入依附于采样点的“设备噪声方差隐变量”，结合随机梯度朗之万动力学（SGLD），不仅生成连续信道图谱，还能同时输出每个坐标点的预测不确定度（Variance map）。",
+      "Methodology": "1. 联合建模：将第 $i$ 个设备的观测值建模为 $y_i = f(x_i) + \\epsilon_i$，其中 $\\epsilon_i \\sim \\mathcal{N}(0, \\sigma_i^2)$ 为未知的异质硬件噪声；\n2. 后验采样：基于OFM训练的无条件泛函先验，在给定观测集合后，在潜空间中运行SGLD算法进行多条轨迹的采样；\n3. 不确定性图谱：通过聚合多条采样轨迹的方差，系统能自动降低高噪声节点的影响权重，并在盲区输出较高的不确定度（Confidence Intervals），为后续的安全路由或资源分配提供可靠依据。"
+    },
+    {
+      "Name": "Dynamic-ST-OFM",
+      "Title": "Spatio-Temporal Operator Flow Matching for 4D Dynamic Channel Knowledge Maps",
+      "Background": "城市环境具有强烈的动态性（如大型车辆驶过导致的临时阴影衰落，或用户分布的潮汐变化）。目前的CKM多假定环境是静态的二维或三维空间，缺乏对时变（Time-varying）特性的建模。",
+      "Hypothesis": "将OFM的输入维度扩展为时空联合坐标 $(x, y, z, \\tau)$，并将移动障碍物（如车辆轨迹）表示为时变边界条件（Time-varying SDF）。利用算子流匹配在函数空间上的平滑泛化能力，生成连续时空演化图谱。",
+      "Methodology": "1. 动态输入：以时间窗口内的异步稀疏信道测量序列及移动散射体轨迹为输入；\n2. 时空特征提取：采用时空联合的Perceiver IO架构，同时捕捉空间衰落相关性与时间多普勒相关性；\n3. 演化预测：通过条件潜流匹配生成连续的时空泛函 $H(x, y, z, \\tau)$，能在连续时间轴上的任意时刻 $\\tau$ 取切片，实现平滑的动态信道视频（Video-like Radio Map）生成与未来衰落的毫秒级预测。"
+    },
+    {
+      "Name": "Wideband-Spectrum-OFM",
+      "Title": "Spectrum-Continuous Operator Flow Matching for Cross-Band CKM Extrapolation",
+      "Background": "6G网络是跨频段融合的网络。然而高频段（太赫兹、毫米波）信号衰减极大，难以获得大范围的众包测量数据。如果能利用廉价且广泛的低频（如Wi-Fi、5G NR）数据推断出高频段的图谱，将极大降低开销。",
+      "Hypothesis": "空间中的物理散射体几何对所有电磁波是共享的，区别仅在于随频率 $f$ 变化的绕射/反射系数与路径损耗。将 CKM 建模为同时包含空间与频率连续维度的映射泛函 $\\mathcal{F}: (x, y, f) \\rightarrow CSI$。使用联合频域神经算子的流匹配模型，能够在连续频率轴上实现平滑的物理规律插值与外推。",
+      "Methodology": "1. 频域坐标嵌入：将载波频率 $f$ 与空间坐标 $(x, y)$ 进行联合高维位置编码，并在编码第一层注入与 $f^2$ 成正比的自由空间路径损耗归纳偏置；\n2. 多频段联合训练：在仿真获得的有限多频段（如2.4G, 5G, 28G）混合数据集上训练算子流匹配模型；\n3. 跨频段推理：模型条件化接收 $f=2.4GHz$ 时的稀疏测量点，输入查询参数 $f=140GHz$ 与任意空间坐标，零样本生成具备物理一致性的太赫兹图谱。"
+    },
+    {
+      "Name": "Near-Field-Manifold-OFM",
+      "Title": "Riemannian Manifold Flow Matching for Near-Field XL-MIMO Channel Knowledge Maps",
+      "Background": "6G引入了超大规模天线阵列（XL-MIMO），导致传统的远场平面波假设失效。在近场区域，电磁波呈现球面波前（Spherical Wavefront），且存在强烈的空间非平稳性。传统的二维笛卡尔坐标平稳CKM无法表征这种高维度的复杂阵列响应。",
+      "Hypothesis": "将近场通信的信道特征定义在非欧几里得的极坐标/球面流形（Riemannian Manifold）上，提出流形流匹配（Manifold Flow Matching）。通过在表征天线可见域的流形上构建向量场，可以精确刻画球面波相位的非线性演化与空间非平稳导致的能量聚焦效应。",
+      "Methodology": "1. 流形构建：将空间坐标系转换为以XL-MIMO阵列中心为原点的距离-角度流形 $\\mathcal{M}$；\n2. 测地线流动力学：取代传统基于欧氏距离的最优传输路径，使用流形上的测地线距离定义基础概率密度到真实信道分布的转移路径；\n3. 空间非平稳性捕捉：模型输出不仅包含路径损耗，还包含指示‘阵列可见区域’的掩码分布，实现对近场聚焦光束能量分布的精准图谱预测。"
+    },
+    {
+      "Name": "RIS-Conditioned-OFM",
+      "Title": "Physics-Guided Conditional Operator Flow Matching for Programmable RIS-Empowered CKM",
+      "Background": "可重构智能表面（RIS）使6G网络从被动适应环境变为主动编程环境。然而，引入包含数百个反射单元的RIS会导致组合爆炸：空间信道图谱成为了RIS相移矩阵 $\\boldsymbol{\\Theta}$ 的高维函数。重构所有相移组合的图谱是不切实际的。",
+      "Hypothesis": "利用算子流匹配构建一个RIS条件生成模型。根据电磁波叠加物理定理，接收信道等于“被动环境直达/多径分量”加上“RIS级联反射分量”。我们将模型设计为显式学习这种叠加残差，以RIS相移矩阵作为生成速度场的高维条件输入，实现对任意未见过的RIS配置的瞬时图谱生成。",
+      "Methodology": "1. RIS配置编码：将相移矩阵 $\\boldsymbol{\\Theta}$ 通过图神经网络（GNN）编码，捕捉相近RIS单元间的电磁耦合效应，生成条件向量 $C_{RIS}$；\n2. 残差向量场构建：定义常微分方程的速度场为 $v_t(S_t, t | C_{RIS}, \\mathcal{D}_{obs})$。模型的基础输出为假设没有RIS时的静态环境CKM；\n3. 流形引导生成：在此基础上，网络根据输入的 $C_{RIS}$ 预测并叠加由RIS反射引起的波束相干干涉条纹（Interference patterns）。这种解耦物理结构的流匹配能够以极低的泛化成本，为动态调控的智能电磁环境提供实时的全域信道知识地图。"
+    },
+    {
+      "Name": "Fed-Functional-FM",
+      "Title": "Federated Operator Flow Matching for Privacy-Preserving Continuous Radio Map Crowdsourcing",
+      "Background": "众包信道数据采集存在严重的隐私泄露风险，因为路径损耗直接与用户精确位置绑定。基于图像的传统联邦学习（Federated Learning）难以处理异构设备上传的非结构化、不同空间分辨率的信道数据。",
+      "Hypothesis": "利用神经算子（Neural Operator）的连续性和分辨率无关特性，在函数空间中直接进行联邦学习（Federated Operator Learning）。客户端只需上传速度场网络在频域的傅里叶系数（Fourier Coefficients），这相当于天然的低通物理滤波，在隐藏高频局部位置轨迹隐私的同时，实现了全局环境宏观泛函的聚合。",
+      "Methodology": "1. 局部连续训练：各UE在本地稀疏轨迹数据上，训练以FNO参数化的流匹配常微分方程；\n2. 频域权重聚合：UE提取FNO中截断的低频段傅里叶权重矩阵上传至服务器。丢弃高频段权重从数学上保证了单点位置的不可逆性；\n3. 全局先验下发：服务器对各客户端泛函映射进行平均聚合，下发更新后的连续流场模型，使得所有节点能够共享一个连续且隐私保护的全局CKM先验场。"
+    },
+    {
+      "Name": "Task-Oriented-CKM",
+      "Title": "Reward-Guided Flow Matching for Task-Oriented Direct Decision Map Generation",
+      "Background": "传统的CKM致力于“像素级”重建物理信道指标（如精确的SNR），但这仅是中间步骤。对于无人机轨迹规划或毫米波波束追踪等下游任务，直接重建高精度CSI不仅消耗巨大算力，且信道重构的MSE误差并不总是与下游任务的效用损失（Utility Loss）正相关。",
+      "Hypothesis": "跳过物理参数重构的中间环节，将算子流匹配重定义为“决策/动作生成器”。通过引入强化学习（RL）的奖励梯度或可微任务模拟器，在ODE求解过程中施加引导（Reward-Guided Flow Matching），模型将直接输出针对特定空间坐标的“最优动作图谱（Optimal Action Map）”。",
+      "Methodology": "1. 任务流形重定义：生成对象不再是连续的路径损耗标量场，而是连续策略场（Continuous Policy Field） $\\pi(a | x,y)$，如特定坐标下的最优预编码矩阵或基站关联索引；\n2. 可微奖励引导：预训练一个任务评价器获取关于当前流状态 $S_t$ 的梯度 $\\nabla_{S_t} R(S_t)$；\n3. 引导采样：在推理时的逆向ODE积分过程中，注入 $\\lambda \\nabla_{S_t} R(S_t)$ 偏置，迫使流匹配的演化轨迹向“高通信速率、低切换延迟”等网络全局效益最大化的拓扑流形偏移，实现从“环境感知图谱”向“环境控制图谱”的范式跨越。"
+    }
+  ]
+}
+
+

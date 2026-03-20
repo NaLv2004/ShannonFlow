@@ -8,7 +8,7 @@ import chainlit as cl
 
 from llm import LLMAgent
 from cli_async_basic import WorkspaceManager
-from utils import format_search_results_and_update_map, process_papers_to_read, read_knowledge_base
+from utils import format_search_results_and_update_map, process_papers_to_read, read_knowledge_base, process_files_to_read
 
 # 从 prompts.py 导入所有 Idea 阶段的完整提示词
 from prompts import (
@@ -50,6 +50,7 @@ async def run_student_agent(student_id, theme, max_iters, model, log_dir, search
 
                 queries = parsed_json.get("SearchQueries", [])
                 papers_to_read = parsed_json.get("PapersToRead", [])
+                files_to_read = parsed_json.get("FilesToRead", [])
                 ideas = parsed_json.get("Ideas", [])
                 if ideas:
                     current_ideas = ideas
@@ -61,6 +62,10 @@ async def run_student_agent(student_id, theme, max_iters, model, log_dir, search
                     if papers_to_read:
                         async with cl.Step(name="📄 正在下载并精读文献全文..."):
                             await cl.make_async(process_papers_to_read)(papers_to_read, doi_url_map, kb_txt_path)
+                            
+                    if files_to_read:
+                        async with cl.Step(name="📄 正在读取本地指定文件..."):
+                            await cl.make_async(process_files_to_read)(files_to_read, kb_txt_path)
 
                     search_feedback = await cl.make_async(format_search_results_and_update_map)(queries, doi_url_map, **search_params)
                     kb_content = await cl.make_async(read_knowledge_base)(kb_txt_path)
@@ -220,7 +225,7 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
     # 阶段一：并行启动 Student Agents 生成 Ideas
     # ======================================
     student_tasks = [
-        run_student_agent(i + 1, user_request, 3, model, log_dir, search_params, local_context)
+        run_student_agent(i + 1, user_request, 10, model, log_dir, search_params, local_context)
         for i in range(2)
     ]
     student_results = await asyncio.gather(*student_tasks)
@@ -247,7 +252,7 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
     await cl.Message(content=f"👨‍🏫 **进入阶段二：Novelty Check (并发严苛审稿)**\n共 {len(all_ideas)} 个 Idea 等待审查...").send()
     
     teacher_tasks = [
-        run_teacher_agent(idx + 1, idea, 8, model, log_dir, search_params)
+        run_teacher_agent(idx + 1, idea, 3, model, log_dir, search_params)
         for idx, idea in enumerate(all_ideas)
     ]
     evaluated_results = await asyncio.gather(*teacher_tasks)

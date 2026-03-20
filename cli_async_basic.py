@@ -355,7 +355,11 @@ class TaskManager:
                     task.log(f"[Coder Action] 读取文件 {params.get('filename')}")
                 elif action == "WRITE_FILE":
                     task.log(f"[Coder Action] 写文件 {params.get('filename')}")
-                    
+                elif action == "FINISH":
+                    task.log(f"[Coder Action] Coder认为自己完成了工作")
+                    task.status = "FINISHED"
+                    task.result_summary = f"Coder Successfully Finished Task."
+                    return
             else:
                 coder_history.append({"action": action, "params": params, "result": f"Unsupported or Unknown Action '{action}' for Coder."})
         

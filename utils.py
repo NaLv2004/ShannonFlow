@@ -610,6 +610,55 @@ def process_papers_to_read(papers_to_read, doi_url_map, kb_txt_path, pdf_reader_
              logger.error(f"PDF 下载失败，跳过阅读 DOI: {doi}")
 
 
+def process_files_to_read(files_to_read, kb_txt_path, pdf_reader_prompt = PDFReader_PROMPT):
+    """处理并阅读本地文件的逻辑（添加给 Student Agent 的 READ_FILE 功能）"""
+    if not files_to_read:
+        return
+
+    gemini_api_key = os.environ.get("JIANYI_API_KEY") 
+    pdf_reader = None
+    if gemini_api_key:
+        pdf_reader = PDFReader(
+            api_key=gemini_api_key,
+            system_prompt=pdf_reader_prompt,
+            context_window_size=1
+        )
+
+    for file_path in files_to_read:
+        if not os.path.exists(file_path):
+            logger.error(f"无法找到本地文件: {file_path}，跳过阅读。")
+            with open(kb_txt_path, 'a', encoding='utf-8') as f:
+                f.write(f"\n--- 尝试读取 {file_path} 失败：文件不存在 ---\n")
+            continue
+            
+        if file_path.lower().endswith('.pdf'):
+            if pdf_reader:
+                logger.info(f"正在交由 AI 深入阅读本地 PDF: {file_path}")
+                pdf_reader.read_pdf(
+                    pdf_path=file_path, 
+                    output_txt_path=kb_txt_path, 
+                    user_prompt=f"Please read this local PDF file and summarize its core methodology and key takeaways."
+                )
+            else:
+                 logger.error(f"阅读PDF {file_path} 失败：未设置 GEMINI_API_KEY")
+                 with open(kb_txt_path, 'a', encoding='utf-8') as f:
+                     f.write(f"\n--- 尝试读取 PDF {file_path} 失败：未设置 GEMINI_API_KEY ---\n")
+        else:
+            # 普通文件尝试读取文本
+            try:
+                logger.info(f"正在读取本地文本文件: {file_path}")
+                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                heading = f"\n--- 本地文件: {file_path} 的内容 ---\n"
+                with open(kb_txt_path, 'a', encoding='utf-8') as out_f:
+                    out_f.write(heading)
+                    out_f.write(content + "\n\n")
+            except Exception as e:
+                logger.error(f"读取本地文件 {file_path} 发生异常: {e}")
+                with open(kb_txt_path, 'a', encoding='utf-8') as f:
+                    f.write(f"\n--- 读取 {file_path} 发生异常: {str(e)} ---\n")
+
+
 def read_knowledge_base(txt_path):
     """读取已存储的全文阅读笔记"""
     if os.path.exists(txt_path):
