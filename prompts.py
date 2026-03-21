@@ -152,7 +152,7 @@ IDEA_GENERATOR_ITERATION_PROMPT = """
 这是你（或其它评审）之前要求精读的论文的全文总结笔记（知识库）：
 {knowledge_base}
 
-这是你之前已经生成的Ideas（供你参考，你可以选择Refine它们，或者提出全新的Idea）。注意，每次json中返回的Ideas列表中，至少要包含之前提出的所有Ideas，也必须追加新的Ideas,并refine之前的。
+这是你之前已经生成的Ideas（供你参考，你可以选择Refine它们，或者提出全新的Idea）。注意，每次json中返回的Ideas列表中，至少要包含之前提出的所有Ideas，并且使之前生成的所有idea更加完备，详细,可实现；最好要追加新的idea，并将之前生成的多个idea进行有机整合，形成新的、更系统的、具有更多创新点（但又不是简单堆叠的）idea。
 {previous_ideas}
 
 请根据最新的文献结果和精读笔记，继续你的研究设想。如果发现你的Idea已经被前人做过，请大修你的假设。如果需要阅读新搜索出的文献全文，请填入 PapersToRead。

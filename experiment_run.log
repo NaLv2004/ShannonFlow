@@ -6279,3 +6279,355 @@
 [2026-03-20 22:38:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
 [2026-03-20 22:38:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
 [2026-03-20 22:38:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 22:51:58] ERROR: 无法找到 DOI: https://doi.org/10.48550/arXiv.2210.02747 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 22:51:58] INFO: 正在交由 AI 深入阅读本地 PDF: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Channel_Knowledge_Map_Construction_via_Conditional_Flow_Matching (1).pdf
+[2026-03-21 22:52:20] INFO: 正在交由 AI 深入阅读本地 PDF: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Channel_Knowledge_Map_Construction_via_Conditional_Flow_Matching (1).pdf
+[2026-03-21 22:52:21] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\data_loaders/loaders.py
+[2026-03-21 22:52:21] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\model/Unet_Gain.py
+[2026-03-21 22:52:45] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\data_loaders/loaders.py
+[2026-03-21 22:52:45] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\model/unet/basic_unet.py
+[2026-03-21 22:52:45] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Train_gain.py
+[2026-03-21 22:56:04] INFO: 正在交由 AI 深入阅读本地 PDF: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Channel_Knowledge_Map_Construction_via_Conditional_Flow_Matching (1).pdf
+[2026-03-21 22:56:22] ERROR: 无法找到本地文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Unet_Gain.py，跳过阅读。
+[2026-03-21 22:56:22] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Train_gain.py
+[2026-03-21 22:56:34] INFO: 正在交由 AI 深入阅读本地 PDF: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Channel_Knowledge_Map_Construction_via_Conditional_Flow_Matching (1).pdf
+[2026-03-21 22:56:53] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\data_loaders/loaders.py
+[2026-03-21 22:56:53] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\RV3.6.py
+[2026-03-21 22:56:53] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\model/Unet_Gain.py
+[2026-03-21 22:56:53] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Test_fm_vs_baseline.py
+[2026-03-21 22:57:12] INFO: [Download] 尝试下载 PDF: https://dl.acm.org/doi/pdf/10.1145/3528223.3530127
+[2026-03-21 22:57:14] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-21 22:57:14] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1145/3528223.3530127
+[2026-03-21 22:57:14] ERROR: 无法找到 DOI: https://doi.org/10.1109/TPAMI.2022.3204461 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 22:57:14] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\model/Unet_Gain.py
+[2026-03-21 22:57:14] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Cal_parameters.py
+[2026-03-21 22:57:37] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2512.13732
+[2026-03-21 22:57:43] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2512.13732.pdf
+[2026-03-21 22:57:43] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2512.13732.pdf
+[2026-03-21 22:58:04] INFO: [Download] 尝试下载 PDF: https://dl.acm.org/doi/pdf/10.1145/3528223.3530127
+[2026-03-21 22:58:06] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-21 22:58:06] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1145/3528223.3530127
+[2026-03-21 22:58:06] ERROR: 无法找到 DOI: https://doi.org/10.1109/TPAMI.2022.3204461 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 22:58:06] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\model/Unet_Gain.py
+[2026-03-21 22:58:06] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Cal_parameters.py
+[2026-03-21 22:58:09] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2504.15623.pdf
+[2026-03-21 22:58:09] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2504.15623.pdf
+[2026-03-21 22:59:16] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Train_gain.py
+[2026-03-21 22:59:16] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Cal_parameters.py
+[2026-03-21 23:00:25] INFO: [Download] 尝试下载 PDF: https://dl.acm.org/doi/pdf/10.1145/3528223.3530127
+[2026-03-21 23:00:27] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-21 23:00:27] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1145/3528223.3530127
+[2026-03-21 23:00:27] ERROR: 无法找到 DOI: https://doi.org/10.1109/TPAMI.2022.3204461 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:00:27] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\model/Unet_Gain.py
+[2026-03-21 23:00:27] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\data_loaders/loaders.py
+[2026-03-21 23:00:27] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Train_gain.py
+[2026-03-21 23:00:27] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2203.15270
+[2026-03-21 23:00:31] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2203.15270.pdf
+[2026-03-21 23:00:31] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2203.15270.pdf
+[2026-03-21 23:00:53] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\train_unet_pa.py
+[2026-03-21 23:00:53] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Train_gain_ablation.py
+[2026-03-21 23:01:31] INFO: [Download] 尝试下载 PDF: https://dl.acm.org/doi/pdf/10.1145/3528223.3530127
+[2026-03-21 23:01:32] ERROR: [Error] 下载失败：HTTP 状态码 403
+[2026-03-21 23:01:32] ERROR: PDF 下载失败，跳过阅读 DOI: https://doi.org/10.1145/3528223.3530127
+[2026-03-21 23:01:32] ERROR: 无法找到 DOI: https://doi.org/10.1109/TPAMI.2022.3204461 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:01:32] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\model/Unet_Gain.py
+[2026-03-21 23:01:32] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\data_loaders/loaders.py
+[2026-03-21 23:01:32] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Train_gain.py
+[2026-03-21 23:03:28] INFO: [Download] 尝试下载 PDF: https://ojs.aaai.org/index.php/AAAI/article/download/32330/34485
+[2026-03-21 23:03:40] INFO: [Success] PDF 下载成功: 10.1609%2Faaai.v39i3.32330.pdf
+[2026-03-21 23:03:40] INFO: 正在交由 AI 深入阅读: pdfs\10.1609%2Faaai.v39i3.32330.pdf
+[2026-03-21 23:03:59] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2111.09881
+[2026-03-21 23:04:04] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2111.09881.pdf
+[2026-03-21 23:04:04] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2111.09881.pdf
+[2026-03-21 23:04:24] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Train_gain_ablation.py
+[2026-03-21 23:04:24] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\test_ablation_steps.py
+[2026-03-21 23:10:15] INFO: [Download] 尝试下载 PDF: https://www.nature.com/articles/s41377-024-01453-x.pdf
+[2026-03-21 23:10:24] INFO: [Success] PDF 下载成功: 10.1038%2Fs41377-024-01453-x.pdf
+[2026-03-21 23:10:24] INFO: 正在交由 AI 深入阅读: pdfs\10.1038%2Fs41377-024-01453-x.pdf
+[2026-03-21 23:11:57] INFO: [Download] 尝试下载 PDF: https://www.nature.com/articles/s41377-023-01340-x.pdf
+[2026-03-21 23:12:05] INFO: [Success] PDF 下载成功: 10.1038%2Fs41377-023-01340-x.pdf
+[2026-03-21 23:12:05] INFO: 正在交由 AI 深入阅读: pdfs\10.1038%2Fs41377-023-01340-x.pdf
+[2026-03-21 23:14:48] ERROR: 无法找到 DOI: https://doi.org/10.48550/arXiv.2302.00482 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:14:48] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2023.3263771 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:15:12] ERROR: 无法找到 DOI: https://doi.org/10.1109/CVPR46437.2021.00713 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:15:12] ERROR: 无法找到 DOI: https://arxiv.org/abs/2410.02242 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:15:12] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2305.02463
+[2026-03-21 23:15:15] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2305.02463.pdf
+[2026-03-21 23:15:15] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2305.02463.pdf
+[2026-03-21 23:15:17] INFO: [Download] 尝试下载 PDF: https://arxiv.org/pdf/2510.02274
+[2026-03-21 23:15:22] INFO: [Success] PDF 下载成功: 10.48550%2Farxiv.2510.02274.pdf
+[2026-03-21 23:15:22] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2510.02274.pdf
+[2026-03-21 23:15:46] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2408.08593.pdf
+[2026-03-21 23:15:46] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2408.08593.pdf
+[2026-03-21 23:16:10] INFO: [Download Info] PDF 已经存在: 10.48550%2Farxiv.2504.15623.pdf
+[2026-03-21 23:16:10] INFO: 正在交由 AI 深入阅读: pdfs\10.48550%2Farxiv.2504.15623.pdf
+[2026-03-21 23:25:05] INFO: [Git] 初始化 Git 仓库...
+[2026-03-21 23:27:44] INFO: Loading state...
+[2026-03-21 23:27:44] INFO: State loaded
+[2026-03-21 23:30:27] INFO: Loading state...
+[2026-03-21 23:30:27] INFO: State loaded
+[2026-03-21 23:46:52] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:46:52] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:46:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:47:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:47:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:47:33] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:47:44] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:47:44] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:47:45] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-21 23:50:59] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2023.3262656 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:50:59] ERROR: 无法找到 DOI: https://doi.org/10.48550/arXiv.2302.00401 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:50:59] INFO: 正在交由 AI 深入阅读本地 PDF: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Channel_Knowledge_Map_Construction_via_Conditional_Flow_Matching (1).pdf
+[2026-03-21 23:51:00] ERROR: 无法找到 DOI: https://doi.org/10.48550/arXiv.2210.02747 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:51:00] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2023.3263901 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:51:00] INFO: 正在交由 AI 深入阅读本地 PDF: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\Channel_Knowledge_Map_Construction_via_Conditional_Flow_Matching (1).pdf
+[2026-03-21 23:51:15] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\data_loaders/loaders.py
+[2026-03-21 23:51:17] INFO: 正在读取本地文本文件: D:/ChannelCoding/aether-tests/FM_Gain_New/FM_Gain\data_loaders/loaders.py
+[2026-03-21 23:51:50] INFO: Loading state...
+[2026-03-21 23:51:50] INFO: State loaded
+[2026-03-21 23:52:01] ERROR: 无法找到 DOI: https://doi.org/10.1109/LWC.2023.3262656 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:52:01] ERROR: 无法找到 DOI: https://doi.org/10.1109/JSAC.2024.3362271 对应的 PDF 下载链接，跳过阅读。
+[2026-03-21 23:56:51] INFO: Loading state...
+[2026-03-21 23:56:51] INFO: State loaded
+[2026-03-22 00:00:36] INFO: Loading state...
+[2026-03-22 00:00:36] INFO: State loaded
+[2026-03-22 00:17:40] INFO: Loading state...
+[2026-03-22 00:17:40] INFO: State loaded
+[2026-03-22 00:24:39] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:25:01] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:26:36] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:27:27] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:29:14] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:35:49] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:35:49] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:35:54] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:35:54] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:35:55] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:40:16] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:40:31] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:41:34] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:42:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:43:04] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:45] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:48] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:48] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:51] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:44:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:49:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:53:51] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:53:51] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:53:54] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:53:57] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:54:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:56:59] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:56:59] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:02] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:04] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:06] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:08] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:08] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:08] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:08] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:08] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:09] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:09] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:09] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:09] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:09] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:11] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:11] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:11] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:11] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:12] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:13] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:13] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:13] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:13] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:13] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:14] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:14] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:14] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:14] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:14] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:15] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:15] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:15] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:15] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:15] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:16] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:16] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:16] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:16] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:16] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:17] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:17] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:17] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:17] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:17] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:18] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:18] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:19] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:19] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:19] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:19] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:19] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:19] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:19] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:20] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:21] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:22] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:23] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:23] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:23] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:23] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:23] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:23] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:23] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:24] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:25] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:25] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:25] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:25] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:25] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:25] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:26] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:26] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:26] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:26] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:26] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:26] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:26] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:26] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:27] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:27] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:27] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:27] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:27] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:27] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:27] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:28] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:28] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:28] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:28] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:28] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:28] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:29] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:29] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:29] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:29] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:29] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:30] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:31] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:31] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:31] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:31] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:31] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:31] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:32] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 00:57:33] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:01:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:01:53] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:01:56] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:01:57] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:02:07] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:09:57] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:09:57] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:00] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:01] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found
+[2026-03-22 01:10:10] ERROR: [TaskManager] Failed to send message: Chainlit context not found

@@ -95,7 +95,7 @@ async def run_teacher_agent(teacher_id, idea, max_iters, model, log_dir, search_
     final_score = None
     review_comments = ""
 
-    async with cl.Step(name=f"👨‍🏫 Teacher {teacher_id} 正在审查: {idea.get('Title', 'N/A')[:40]}...", type="run") as parent_step:
+    async with cl.Step(name=f"👨‍🏫 Teacher {teacher_id} 正在审查: {idea.get('Title', 'N/A')}...", type="run") as parent_step:
         for i in range(max_iters):
             async with cl.Step(name=f"Review Iter {i+1}/{max_iters}") as step:
                 kb_content = await cl.make_async(read_knowledge_base)(kb_txt_path)
@@ -122,7 +122,7 @@ async def run_teacher_agent(teacher_id, idea, max_iters, model, log_dir, search_
                 decision = parsed_json.get("Decision", "Pending")
                 final_score = parsed_json.get("Score")
                 review_comments = parsed_json.get("Thoughts", "")
-                step.output = f"**Decision:** {decision} | **Score:** {final_score}\n**Thoughts:** {review_comments[:200]}..."
+                step.output = f"**Decision:** {decision} | **Score:** {final_score}\n**Thoughts:** {review_comments}..."
 
                 if decision == "Finished":
                     break
@@ -185,7 +185,7 @@ async def refine_idea(idea, user_instructions, allow_search, max_iters, model, l
                 if refined_ideas_list and len(refined_ideas_list) > 0:
                     current_idea = refined_ideas_list[0]
 
-                step.output = f"**Thoughts:** {thoughts[:200]}...\n```json\n{json.dumps(current_idea, indent=2, ensure_ascii=False)}\n```"
+                step.output = f"**Thoughts:** {thoughts}...\n```json\n{json.dumps(current_idea, indent=2, ensure_ascii=False)}\n```"
 
                 # 处理搜索和阅读逻辑
                 search_feedback = "用户未开启搜索权限或本轮未进行搜索。"
@@ -219,6 +219,8 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
     os.makedirs(log_dir, exist_ok=True)
     os.makedirs(idea_dir, exist_ok=True)
     model = settings.get("orchestrator_model", "gemini-3-flash-preview")
+    student_run_iterations = settings.get("max_idea_generator_iterations",5)
+    teacher_review_iterations = settings.get("max_idea_review_iterations",5)
     search_params = {"open_access": True, "has_pdf_url": True, "from_year": 2020}
 
     # 读取本地环境
@@ -230,7 +232,7 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
     # 阶段一：并行启动 Student Agents 生成 Ideas
     # ======================================
     student_tasks = [
-        run_student_agent(i + 1, user_request, 3, model, log_dir, search_params, local_context, workspace_dir)
+        run_student_agent(i + 1, user_request, student_run_iterations, model, log_dir, search_params, local_context, workspace_dir)
         for i in range(2)
     ]
     student_results = await asyncio.gather(*student_tasks)
@@ -257,7 +259,7 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
     await cl.Message(content=f"👨‍🏫 **进入阶段二：Novelty Check (并发严苛审稿)**\n共 {len(all_ideas)} 个 Idea 等待审查...").send()
     
     teacher_tasks = [
-        run_teacher_agent(idx + 1, idea, 3, model, log_dir, search_params)
+        run_teacher_agent(idx + 1, idea, teacher_review_iterations, model, log_dir, search_params)
         for idx, idea in enumerate(all_ideas)
     ]
     evaluated_results = await asyncio.gather(*teacher_tasks)
@@ -295,7 +297,7 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
             "id": d["id"],
             "title": d["idea"].get("Title", ""),
             "score": d["score"],
-            "comments": d["comments"][:500]
+            "comments": d["comments"]
         } for d in display_list], f, indent=4, ensure_ascii=False)
 
     # ======================================
@@ -308,11 +310,11 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
             idea = item['idea']
             md_content += f"---\n#### 📌 [{item['id']}] {idea.get('Title', 'No Title')} (Score: {item['score']})\n"
             md_content += f"**Name:** {idea.get('Name', 'N/A')}\n\n"
-            md_content += f"**Background:** {idea.get('Background', '')[:200]}...\n\n"
-            md_content += f"**Hypothesis:** {idea.get('Hypothesis', '')[:200]}...\n\n"
-            md_content += f"**Methodology:** {idea.get('Methodology', '')[:200]}...\n\n"
+            md_content += f"**Background:** {idea.get('Background', '')}...\n\n"
+            md_content += f"**Hypothesis:** {idea.get('Hypothesis', '')}...\n\n"
+            md_content += f"**Methodology:** {idea.get('Methodology', '')}...\n\n"
             if item['score'] != "未评审":
-                md_content += f"**📝 Review:** {item['comments'][:300]}...\n\n"
+                md_content += f"**📝 Review:** {item['comments']}...\n\n"
 
         await cl.Message(content=md_content).send()
 

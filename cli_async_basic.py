@@ -192,7 +192,7 @@ class TaskManager:
     def get_active_tasks(self):
         return {tid: t for tid, t in self.tasks.items() if t.status == "RUNNING"}
 
-    def get_finished_tasks_and_clear(self):
+    def get_finished_tasks_and_clear(self, action_history = None ):
         for tid in list(self.tasks.keys()):
             if self.tasks[tid].status in ["FINISHED", "KILLED", "ERROR"]:
                 self.finished_archive[tid] = self.tasks.pop(tid)
@@ -751,7 +751,7 @@ class StandardTools:
         if not system.plan_mode: return "Error: Not in Plan Mode."
         system.plan_index += system.concurrent_plan_steps
         if system.plan_index >= len(system.plan):
-            return "Plan steps finished. You can FINISH the task or handle new tasks."
+            return "All plan steps have been finished. You must call the FINISH tool in JSON format to exit the cycle."
         return "Step marked as done. Next steps will be provided."
 
 class AgentSystem:
@@ -990,7 +990,12 @@ class AgentSystem:
         logger.info(f"State loaded")
         if state:
             self.rounds, self.action_history, self.summaries = state.get("rounds", 0), state.get("tool_calls_history", []), state.get("summaries", "")
-            await cl.Message(content=f"🔄 系统从第 {self.rounds} 轮热启动恢复执行").send()
+            if self.plan_mode:
+                self.plan = self.get('plan',[])
+                self.plan_index = self.get('plan_index',0)
+                if len(self.plan) > 0:
+                    await cl.Message(content=f"🔄 系统从上次保存的计划恢复执行,原计划共有{len(self.plan)}步，从{self.plan_index+1}步开始继续执行").send()
+            await cl.Message(content=f"🔄 系统从第 {self.rounds} 轮行动热启动恢复执行").send()
         elif os.path.exists(self.summary_txt):
             with open(self.summary_txt, 'r', encoding='utf-8', errors='ignore') as f: self.summaries = f.read()
 
@@ -1030,7 +1035,25 @@ class AgentSystem:
             for tid, t in self.task_manager.get_finished_tasks_and_clear().items():
                 final_logs = "".join(t.log_history)
                 finished_tasks_info += f"任务 {tid} 结束。状态: {t.status}. 结果: {t.result_summary}\n Logs:{final_logs}\n"
-                self.action_history.append({"action": "ASYNC_TASK_FINISH", "params": {"task_id": tid}, "result": t.result_summary+final_logs})
+                
+                new_result = t.result_summary + final_logs
+                
+                # 检查 action_history 中是否已经存在相同的 task_id 且 result 完全一致的记录
+                is_duplicate = any(
+                    h.get("action") == "ASYNC_TASK_FINISH" and 
+                    h.get("params", {}).get("task_id") == tid and 
+                    h.get("result") == new_result 
+                    for h in self.action_history
+                )
+                
+                if not is_duplicate:
+                    self.action_history.append({
+                        "action": "ASYNC_TASK_FINISH", 
+                        "params": {"task_id": tid}, 
+                        "result": new_result
+                    })
+                
+                # self.action_history.append({"action": "ASYNC_TASK_FINISH", "params": {"task_id": tid}, "result": t.result_summary+final_logs})
 
             # 利用抽离的 ContextBuilder 构建 Prompt
             context_prompt = self.context_builder.build_context(
@@ -1073,17 +1096,17 @@ class AgentSystem:
                     continue  # 直接跳到下一轮，在 while 循环顶部会读取 user_interrupt_requests
                     
                 ################### This is a test #################
-                resp = """
-                ```json
-{
-    "Thoughts": "The training script `Train_geometric.py` previously failed due to Unicode encoding issues with emojis in a Windows environment. I have now removed the emojis and simplified the print statements. I will restart the training process to verify the implementation and begin recording results. The model uses a Set Transformer for context encoding and an INR-based velocity field with Fourier features and SDF values as geometric conditioning.",
-    "Action": "SPAWN_RUN",
-    "Action_Params": {
-        "run_script": "python Train_geometric.py"
-    }
-}
-```
-                """
+#                 resp = """
+#                 ```json
+# {
+#     "Thoughts": "The training script `Train_geometric.py` previously failed due to Unicode encoding issues with emojis in a Windows environment. I have now removed the emojis and simplified the print statements. I will restart the training process to verify the implementation and begin recording results. The model uses a Set Transformer for context encoding and an INR-based velocity field with Fourier features and SDF values as geometric conditioning.",
+#     "Action": "SPAWN_RUN",
+#     "Action_Params": {
+#         "run_script": "python Train_geometric.py"
+#     }
+# }
+# ```
+#                 """
                 
                 action_json = LLMAgent.robust_extract_json(resp)
                 if not action_json:

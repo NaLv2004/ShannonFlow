@@ -142,15 +142,17 @@ async def start():
     cl.user_session.set("dashboard_task", None)
 
     await cl.ChatSettings([
-        Select(id="start_phase", label="📌 起始阶段", values=PHASES, initial_index=0),
-        TextInput(id="request_file", label="📋 需求文件名", initial="request.txt"),
-        TextInput(id="orchestrator_model", label="🧠 管家大模型 (Orchestrator)", initial="gemini-3.1-pro-preview"),
-        TextInput(id="coder_model", label="💻 编程大模型 (Coder)", initial="gemini-3.1-pro-preview"),
-        Select(id="env_type", label="🐍 环境类型", values=["None", "Conda", "Venv"], initial_index=1),
-        TextInput(id="env_name_or_path", label="🐍 环境名/路径", initial="AutoGenOld"),
-        Select(id="plan_mode", label="📝 计划拆解模式 (Plan Mode)", values=["True", "False"], initial_index=0),
-        Slider(id="max_concurrent_tasks", label="⚡ 最大并发任务数", initial=3, min=1, max=10, step=1),
-        Slider(id="max_rounds", label="🔄 管家最大执行轮次", initial=500, min=10, max=1000, step=10),
+        Select(id="start_phase", label="选择起始阶段", values=PHASES, initial_index=0),
+        TextInput(id="request_file", label="指定需求文件名", initial="request.txt"),
+        TextInput(id="orchestrator_model", label="科研组织者大模型 (Orchestrator)", initial="gemini-3.1-pro-preview"),
+        TextInput(id="coder_model", label="编程大模型 (Coder)", initial="gemini-3.1-pro-preview"),
+        Select(id="env_type", label="环境类型", values=["None", "Conda", "Venv"], initial_index=1),
+        TextInput(id="env_name_or_path", label="环境名/路径", initial="AutoGenOld"),
+        Select(id="plan_mode", label="计划拆解模式 (Plan Mode)", values=["True", "False"], initial_index=0),
+        Slider(id="max_concurrent_tasks", label="最大并发任务数", initial=3, min=1, max=10, step=1),
+        Slider(id="max_rounds", label="管家最大执行轮次", initial=500, min=10, max=1000, step=10),
+        Slider(id="max_idea_generator_iterations",label="Idea 生成器最大迭代次数",initial=10,min=3,max=20),
+        Slider(id="max_idea_review_iterations",label="Idea 审查器最大迭代次数",initial=10,min=3,max=20)
     ]).send()
 
     # 欢迎页面
