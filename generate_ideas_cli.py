@@ -26,7 +26,7 @@ from prompts import (
 # ==========================================
 # 1. Student Agent: 生成 Idea
 # ==========================================
-async def run_student_agent(student_id, theme, max_iters, model, log_dir, search_params, local_context):
+async def run_student_agent(student_id, theme, max_iters, model, log_dir, search_params, local_context, workspace):
     agent = LLMAgent(model=model, log_file=os.path.join(log_dir, f"log_student_{student_id}.log"))
     agent.set_context_len(4)
     kb_txt_path = os.path.join(log_dir, f"kb_student_{student_id}.txt")
@@ -38,7 +38,10 @@ async def run_student_agent(student_id, theme, max_iters, model, log_dir, search
         for i in range(max_iters):
             async with cl.Step(name=f"Iteration {i+1}/{max_iters}") as step:
                 step.output = "正在思考并生成JSON..."
-                response, _ = await agent.get_response_stream_async(current_prompt, IDEA_GENERATOR_SYSTEM_PROMPT)
+                try:
+                    response, _ = await agent.get_response_stream_async(current_prompt, IDEA_GENERATOR_SYSTEM_PROMPT)
+                except:
+                    continue
                 parsed_json = LLMAgent.robust_extract_json(response)
 
                 if not parsed_json:
@@ -65,7 +68,7 @@ async def run_student_agent(student_id, theme, max_iters, model, log_dir, search
                             
                     if files_to_read:
                         async with cl.Step(name="📄 正在读取本地指定文件..."):
-                            await cl.make_async(process_files_to_read)(files_to_read, kb_txt_path)
+                            await cl.make_async(process_files_to_read)(files_to_read, kb_txt_path, workspace_dir=workspace)
 
                     search_feedback = await cl.make_async(format_search_results_and_update_map)(queries, doi_url_map, **search_params)
                     kb_content = await cl.make_async(read_knowledge_base)(kb_txt_path)
@@ -105,8 +108,10 @@ async def run_teacher_agent(teacher_id, idea, max_iters, model, log_dir, search_
                     search_results=search_feedback,
                     knowledge_base=kb_content,
                 )
-
-                response, _ = await agent.get_response_stream_async(current_prompt, NOVELTY_CHECK_SYSTEM_PROMPT)
+                try:
+                    response, _ = await agent.get_response_stream_async(current_prompt, NOVELTY_CHECK_SYSTEM_PROMPT)
+                except:
+                    continue
                 parsed_json = LLMAgent.robust_extract_json(response)
 
                 if not parsed_json:
@@ -225,7 +230,7 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
     # 阶段一：并行启动 Student Agents 生成 Ideas
     # ======================================
     student_tasks = [
-        run_student_agent(i + 1, user_request, 10, model, log_dir, search_params, local_context)
+        run_student_agent(i + 1, user_request, 3, model, log_dir, search_params, local_context, workspace_dir)
         for i in range(2)
     ]
     student_results = await asyncio.gather(*student_tasks)
@@ -363,7 +368,9 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
             if not action_res:
                 action_val = "y"  # 超时默认确认
             else:
-                action_val = action_res.get("value", "y")
+                payload = action_res.get("payload", {})
+                action_val = payload.get("value", "y")
+                # action_val = action_res.get("value", "y")
 
             if action_val == "q":
                 await cl.Message(content="👋 用户退出。").send()
@@ -402,8 +409,11 @@ async def run_ideas_workflow(workspace_dir, user_request, settings):
                     ],
                     timeout=120
                 ).send()
-
-                allow_search = (search_res and search_res.get("value") == "yes")
+                
+                
+                allow_search_payload = search_res.get("payload", {})
+                allow_search = (allow_search_payload.get("value", "yes") == "yes")
+                #allow_search = (search_res and search_res.get("value") == "yes")
 
                 await cl.Message(
                     content=f"🔧 **正在启动 Refiner Agent** 对 Idea 进行优化 (Search={allow_search})..."

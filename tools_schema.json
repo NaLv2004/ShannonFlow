@@ -2,7 +2,8 @@
   "READ_FILE": {
     "description": "读取某个文件的内容。阅读的结果会在每行行首附带行号。如果是PDF文件，可以附加instruction参数告知需要抓取哪部分。",
     "params": {
-      "filename": "提供所需读取的文件名(路径)"
+      "filename": "提供所需读取的文件名(路径)",
+      "summary":"对当前步骤的详细总结"
     }
   },
   "READ_CODE": {
@@ -115,7 +116,8 @@
     "params": {
       "filename": "修改的目标文件路径",
       "start_line": "1-indexed的起始匹配行号",
-      "old_code": "该起始行开始需要原样匹配的旧代码内容",
+      "end_line": "1-indexed的结束匹配行号",
+      "old_code": "从起始行开始到结束行需要原样匹配的旧代码内容，需要做到与原代码完全一致",
       "new_code": "被替换成的新代码内容"
     }
   }

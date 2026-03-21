@@ -610,7 +610,7 @@ def process_papers_to_read(papers_to_read, doi_url_map, kb_txt_path, pdf_reader_
              logger.error(f"PDF 下载失败，跳过阅读 DOI: {doi}")
 
 
-def process_files_to_read(files_to_read, kb_txt_path, pdf_reader_prompt = PDFReader_PROMPT):
+def process_files_to_read(files_to_read, kb_txt_path, pdf_reader_prompt = PDFReader_PROMPT, workspace_dir=""):
     """处理并阅读本地文件的逻辑（添加给 Student Agent 的 READ_FILE 功能）"""
     if not files_to_read:
         return
@@ -623,8 +623,9 @@ def process_files_to_read(files_to_read, kb_txt_path, pdf_reader_prompt = PDFRea
             system_prompt=pdf_reader_prompt,
             context_window_size=1
         )
-
+    
     for file_path in files_to_read:
+        file_path = os.path.join(workspace_dir, file_path)
         if not os.path.exists(file_path):
             logger.error(f"无法找到本地文件: {file_path}，跳过阅读。")
             with open(kb_txt_path, 'a', encoding='utf-8') as f:

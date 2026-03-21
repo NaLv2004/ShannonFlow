@@ -187,16 +187,16 @@ class TaskManager:
         self.tasks = {}
         self.task_counter = 0
         self.system = None
+        self.finished_archive = {}
 
     def get_active_tasks(self):
         return {tid: t for tid, t in self.tasks.items() if t.status == "RUNNING"}
 
     def get_finished_tasks_and_clear(self):
-        finished = {}
         for tid in list(self.tasks.keys()):
             if self.tasks[tid].status in ["FINISHED", "KILLED", "ERROR"]:
-                finished[tid] = self.tasks.pop(tid)
-        return finished
+                self.finished_archive[tid] = self.tasks.pop(tid)
+        return self.finished_archive
 
     def _run_worker(self, task, run_script, tid):
         import platform
@@ -290,7 +290,7 @@ class TaskManager:
                 prompt += "【已执行的 Tool 历史】\n"
                 for h in coder_history:
                     prompt += f"Action: {h['action']}, Params: {json.dumps(h['params'], ensure_ascii=False)}\nResult:\n{h['result']}\n\n"
-            prompt += "请决定下一步 Action (READ_CODE, RUN_CODE, SUBMIT_CODE)。"
+            prompt += "请决定下一步 Action (READ_CODE, RUN_CODE, SUBMIT_CODE, FINISH, MODIFY_CODE)。"
 
             try:
                 formatted_prompt = DEFAULT_CODER_PROMPT
@@ -578,33 +578,115 @@ class StandardTools:
         return f"Found {len(results)} matches.\n\n" + "\n---\n".join(results[:20])
 
     @staticmethod
+    # import os
+
     async def modify_code(system, params, resp):
         fn = params.get("filename", "")
-        start_line = params.get("start_line", 1)
-        old_code = params.get("old_code", "")
-        new_code = params.get("new_code", "")
+        start_line = params.get("start_line")
+        end_line = params.get("end_line")
+        old_code = params.get("old_code", "") # 仅用作安全校验
+        new_code = params.get("new_code", "") # 替换后的新代码
+        
         path = os.path.join(system.workspace_dir, fn)
         if not os.path.exists(path):
             return f"Error: File {fn} not found."
+            
         try:
+            # 1. 基础行号校验与转换 (1-indexed to 0-indexed)
+            start_idx = int(start_line) - 1
+            end_idx = int(end_line) - 1
+            
+            if start_idx < 0 or end_idx < start_idx:
+                return f"Error: Invalid line range {start_line} to {end_line}."
+
             with open(path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-            old_lines = old_code.splitlines(keepends=True)
-            if not old_lines: return "Error: old_code is empty."
-            start_idx = int(start_line) - 1
-            if start_idx < 0 or start_idx >= len(lines):
-                return f"Error: start_line {start_line} out of bounds."
-            actual_old = "".join(lines[start_idx:start_idx + len(old_lines)])
-            if actual_old.strip() != old_code.strip():
-                return f"Error: Code mismatch at line {start_line}.\nExpected:\n{old_code}\nActually found:\n{actual_old}"
-            new_lines = new_code.splitlines(keepends=True)
-            lines = lines[:start_idx] + new_lines + lines[start_idx + len(old_lines):]
+                
+            if end_idx >= len(lines):
+                return f"Error: end_line {end_line} exceeds file length ({len(lines)} lines)."
+
+            # 2. 提取目标区域的真实代码
+            # Python 切片是左闭右开，所以 end_idx 需要 +1
+            target_lines = lines[start_idx : end_idx + 1]
+            
+            # 3. 鲁棒的安全校验（防呆机制）：忽略空行和前后空格
+            def normalize_code(text_or_lines):
+                """将代码标准化：按行分割，去掉每行首尾空白，并剔除纯空行"""
+                if isinstance(text_or_lines, str):
+                    lines_list = text_or_lines.splitlines()
+                else:
+                    lines_list = text_or_lines
+                return [line.strip() for line in lines_list if line.strip()]
+
+            # 如果 LLM 提供了 old_code，我们进行“模糊比对”
+            if old_code:
+                norm_target = normalize_code(target_lines)
+                norm_old = normalize_code(old_code)
+                
+                if norm_target != norm_old:
+                    # 校验失败时，把真实的行代码返回给 LLM，帮助它纠正幻觉
+                    actual_code_str = "".join(target_lines)
+                    return (
+                        f"Error: Code mismatch at lines {start_line}-{end_line}.\n"
+                        f"You expected to replace:\n{old_code}\n\n"
+                        f"But the actual code at lines {start_line}-{end_line} is:\n{actual_code_str}\n"
+                        f"Please check the line numbers and try again."
+                    )
+
+            # 4. 处理新代码并确保换行符正确
+            # 使用 splitlines() 去除 LLM 可能乱加的 \n，然后统一规范添加 \n
+            if new_code.strip() == "":
+                new_lines = []  # 支持纯删除操作
+            else:
+                new_lines = [line + "\n" for line in new_code.splitlines()]
+
+            # 5. 执行替换：[起始行前] + [新代码] + [结束行后]
+            final_lines = lines[:start_idx] + new_lines + lines[end_idx + 1:]
+
+            # 6. 写入文件并提交
             with open(path, "w", encoding="utf-8") as f:
-                f.writelines(lines)
+                f.writelines(final_lines)
+                
+            # 假设 WorkspaceManager 是你系统里的 Git 管理类
             WorkspaceManager.git_commit_and_push_with_msg(system.workspace_dir, f"MODIFY_CODE updated {fn}")
-            return f"Successfully modified {fn} at line {start_line}."
+            
+            # 计算行数变化给 LLM 一个反馈
+            lines_diff = len(new_lines) - len(target_lines)
+            diff_msg = f" (File length changed by {lines_diff} lines)" if lines_diff != 0 else ""
+            
+            return f"Successfully replaced lines {start_line} to {end_line} in {fn}.{diff_msg}"
+            
+        except ValueError:
+            return "Error: start_line and end_line must be integers."
         except Exception as e:
             return f"MODIFY_CODE Error: {e}"
+    # async def modify_code(system, params, resp):
+    #     fn = params.get("filename", "")
+    #     start_line = params.get("start_line", 1)
+    #     old_code = params.get("old_code", "")
+    #     new_code = params.get("new_code", "")
+    #     path = os.path.join(system.workspace_dir, fn)
+    #     if not os.path.exists(path):
+    #         return f"Error: File {fn} not found."
+    #     try:
+    #         with open(path, "r", encoding="utf-8") as f:
+    #             lines = f.readlines()
+    #         old_lines = old_code.splitlines(keepends=True)
+    #         if not old_lines: return "Error: old_code is empty."
+    #         start_idx = int(start_line) - 1
+    #         if start_idx < 0 or start_idx >= len(lines):
+    #             return f"Error: start_line {start_line} out of bounds."
+    #         actual_old = "".join(lines[start_idx:start_idx + len(old_lines)])
+    #         if actual_old.strip() != old_code.strip():
+    #             return f"Error: Code mismatch at line {start_line}.\nExpected:\n{old_code}\nActually found:\n{actual_old}"
+    #         new_lines = new_code.splitlines(keepends=True)
+    #         lines = lines[:start_idx] + new_lines + lines[start_idx + len(old_lines):]
+    #         with open(path, "w", encoding="utf-8") as f:
+    #             f.writelines(lines)
+    #         WorkspaceManager.git_commit_and_push_with_msg(system.workspace_dir, f"MODIFY_CODE updated {fn}")
+    #         return f"Successfully modified {fn} at line {start_line}."
+    #     except Exception as e:
+    #         return f"MODIFY_CODE Error: {e}"
 
     @staticmethod
     async def write_file(system, params, resp):
@@ -758,7 +840,7 @@ class AgentSystem:
         plan_approved = False
         user_feedback = ""
         teacher_feedback = ""
-        student_plan_prev = None
+        student_plan_prev = []
 
         # 第一层循环：Human-in-the-Loop (用户审核)
         adversarial_iter = 0
@@ -771,13 +853,18 @@ class AgentSystem:
             # 第二层循环：Student 工具调用与计划生成
             for step_idx in range(self.max_plan_iterations):
                 is_final_step = ((step_idx+1) == self.max_plan_iterations)
-                workspace_tree = WorkspaceManager.get_workspace_state_recursive(self.workspace_dir, self.max_files)
+                try:
+                    workspace_tree = WorkspaceManager.get_workspace_state_recursive(self.workspace_dir, self.max_files)
+                except:
+                    logger.error(f"Failed to get workspace state for {self.workspace_dir}")
                 hardware_status = SystemMonitor.get_hardware_status()
-                
+                try:
                 # 构建 Student 的 Context
-                context = PlannerContextBuilder.build_student_context(
-                    request_text, user_feedback, teacher_feedback, workspace_tree, hardware_status, student_history, is_final_step
-                )
+                    context = PlannerContextBuilder.build_student_context(
+                        request_text, user_feedback, teacher_feedback, workspace_tree, hardware_status, student_history, student_plan_prev, is_final_step
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to build student context: {e}")
                 
                 async with cl.Step(name=f"Student Plan Step {step_idx+1}") as step:
                     try:
@@ -798,7 +885,7 @@ class AgentSystem:
                     step.output = f"**Thoughts:** {action_json.get('Thoughts', '')}\n**Action:** `{action}`"
 
                     # 拦截特殊的提交流程工具
-                    student_plan = None
+                    student_plan = []
                     if action == "SUBMIT_PLAN":
                         student_plan = params.get("Plan", [])
                         if len(student_plan)>0:
@@ -965,6 +1052,7 @@ class AgentSystem:
                         on_token_callback=stream_msg.stream_token,
                         cancel_event=self.interrupt_event
                     )
+                    
                     await stream_msg.update()
                 except Exception as e:
                     step.output = f"❌ API 调用失败: {e}，将在 5 秒后重试..."
@@ -983,7 +1071,20 @@ class AgentSystem:
                 if was_interrupted:
                     await cl.Message(content="⚡ **已中断当前推理，正在处理您的新指令...**").send()
                     continue  # 直接跳到下一轮，在 while 循环顶部会读取 user_interrupt_requests
-
+                    
+                ################### This is a test #################
+                resp = """
+                ```json
+{
+    "Thoughts": "The training script `Train_geometric.py` previously failed due to Unicode encoding issues with emojis in a Windows environment. I have now removed the emojis and simplified the print statements. I will restart the training process to verify the implementation and begin recording results. The model uses a Set Transformer for context encoding and an INR-based velocity field with Fourier features and SDF values as geometric conditioning.",
+    "Action": "SPAWN_RUN",
+    "Action_Params": {
+        "run_script": "python Train_geometric.py"
+    }
+}
+```
+                """
+                
                 action_json = LLMAgent.robust_extract_json(resp)
                 if not action_json:
                     step.output = "⚠️ 未能解析 JSON 指令"
@@ -992,7 +1093,7 @@ class AgentSystem:
 
                 action = action_json.get("Action")
                 params = action_json.get("Action_Params", {})
-                current_summary = params.get('summary', "")
+                current_summary = action_json.get('summary', "")
                 step.output = f"**Thoughts:** {action_json.get('Thoughts', '')}\n\n**Action:** `{action}`\n**Params:** \n```json\n{json.dumps(params, indent=2)}\n```"
 
             if current_summary:
