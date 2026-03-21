@@ -82,8 +82,11 @@ class WorkspaceManager:
             except Exception: pass
 
     @staticmethod
-    def save_state(workspace_dir, rounds, tool_calls_history, summaries):
-        state = {"rounds": rounds, "tool_calls_history": tool_calls_history, "summaries": summaries}
+    def save_state(workspace_dir, rounds, tool_calls_history, summaries, plan_mode, plan=None, plan_index=None):
+        if not plan_mode:
+            state = {"rounds": rounds, "tool_calls_history": tool_calls_history, "summaries": summaries}
+        else:
+            state = {"rounds": rounds, "plan": plan,"plan_index":plan_index,"tool_calls_history": tool_calls_history, "summaries": summaries}
         path = os.path.join(workspace_dir, "experiment_state.json")
         try:
             with open(path, "w", encoding="utf-8") as f:
@@ -107,7 +110,7 @@ class WorkspaceManager:
         except PermissionError: return prefix + "[Permission Denied]\n"
 
         items = [f for f in items if not f.startswith('.') and f not in ['__pycache__', 'pdfs']]
-        files = [f for f in items if os.path.isfile(os.path.join(dir_path, f))]
+        files = [f for f in items if (os.path.isfile(os.path.join(dir_path, f)) and not f.endswith("experiment_state.json"))]
         dirs = [d for d in items if os.path.isdir(os.path.join(dir_path, d))]
 
         for i, f in enumerate(files):
@@ -167,7 +170,8 @@ class AsyncTask:
         try:
             cl.run_sync(cl.Message(content=f"[{self.task_id}] {msg.strip()}").send())
         except Exception as e:
-            logger.error(f"[TaskManager] Failed to send message: {e}")
+            # logger.error(f"[TaskManager] Failed to send message: {e}")
+            pass
 
     def kill(self):
         self._stop_event.set()
@@ -991,8 +995,8 @@ class AgentSystem:
         if state:
             self.rounds, self.action_history, self.summaries = state.get("rounds", 0), state.get("tool_calls_history", []), state.get("summaries", "")
             if self.plan_mode:
-                self.plan = self.get('plan',[])
-                self.plan_index = self.get('plan_index',0)
+                self.plan = state.get('plan',[])
+                self.plan_index = state.get('plan_index',0)
                 if len(self.plan) > 0:
                     await cl.Message(content=f"🔄 系统从上次保存的计划恢复执行,原计划共有{len(self.plan)}步，从{self.plan_index+1}步开始继续执行").send()
             await cl.Message(content=f"🔄 系统从第 {self.rounds} 轮行动热启动恢复执行").send()
@@ -1128,7 +1132,7 @@ class AgentSystem:
             res = await self.tool_registry.execute(action, self, params, resp)
             self.action_history.append({"action": action, "params": params, "result": res})
 
-            WorkspaceManager.save_state(self.workspace_dir, self.rounds, self.action_history, self.summaries)
+            WorkspaceManager.save_state(self.workspace_dir, self.rounds, self.action_history, self.summaries, self.plan_mode, self.plan, self.plan_index)
 
             if action not in ["WAIT", "SPAWN_CODER", "SPAWN_RUN", "FINISH"] and not self.stop_workflow:
                 # ★ 短暂让出事件循环，让 Chainlit 有机会处理用户消息
