@@ -146,6 +146,124 @@ class WorkspaceManager:
 # ==========================================
 # 模块2: 并发任务管理器 (Task Management)
 # ==========================================
+# class AsyncTask:
+#     def __init__(self, task_id, task_type, args, workspace_dir):
+#         self.task_id = task_id
+#         self.task_type = task_type
+#         self.args = args
+#         self.workspace_dir = workspace_dir
+#         self.status = "RUNNING"
+#         self.output_queue = queue.Queue()
+#         self.log_history = deque(maxlen=2000)
+#         self.full_log = []
+#         self.result_summary = ""
+#         self.start_time = time.time()
+#         self.process = None
+#         self.thread = None
+#         self._stop_event = threading.Event()
+
+#     def log(self, msg):
+#         line = msg.strip() + "\n"
+#         self.output_queue.put(line)
+#         self.log_history.append(line)
+#         self.full_log.append(line)
+#         try:
+#             cl.run_sync(cl.Message(content=f"[{self.task_id}] {msg.strip()}").send())
+#         except Exception as e:
+#             # logger.error(f"[TaskManager] Failed to send message: {e}")
+#             pass
+
+#     def kill(self):
+#         self._stop_event.set()
+#         if self.process:
+#             try: subprocess.run(f"taskkill /F /T /PID {self.process.pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+#             except: pass
+#         self.status = "KILLED"
+#         self.log("\n[System] Task was KILLED by Orchestrator.")
+
+# class TaskManager:
+#     def __init__(self, max_concurrent, workspace_dir, coder_model_name, env_type, env_name_or_path):
+#         self.max_concurrent = max_concurrent
+#         self.workspace_dir = workspace_dir
+#         self.coder_model_name = coder_model_name
+#         self.env_type = env_type
+#         self.env_name_or_path = env_name_or_path
+#         self.tasks = {}
+#         self.task_counter = 0
+#         self.system = None
+#         self.finished_archive = {}
+
+#     def get_active_tasks(self):
+#         return {tid: t for tid, t in self.tasks.items() if t.status == "RUNNING"}
+
+#     def get_finished_tasks_and_clear(self, action_history = None ):
+#         for tid in list(self.tasks.keys()):
+#             if self.tasks[tid].status in ["FINISHED", "KILLED", "ERROR"]:
+#                 self.finished_archive[tid] = self.tasks.pop(tid)
+#         return self.finished_archive
+
+#     def _run_worker(self, task, run_script, tid):
+#         import platform
+#         is_windows = platform.system() == "Windows"
+#         ext = "bat" if is_windows else "sh"
+#         script_path = os.path.join(self.workspace_dir, f"run_{tid}.{ext}")
+        
+#         script_content = run_script
+#         if self.env_type == "Conda" and self.env_name_or_path:
+#             if is_windows:
+#                 script_content = f"call conda activate {self.env_name_or_path}\n" + run_script
+#             else:
+#                 script_content = f"source activate {self.env_name_or_path}\n" + run_script
+#         elif self.env_type == "Venv" and self.env_name_or_path:
+#             if is_windows:
+#                 script_content = f"call {self.env_name_or_path}\\Scripts\\activate.bat\n" + run_script
+#             else:
+#                 script_content = f"source {self.env_name_or_path}/bin/activate\n" + run_script
+
+#         with open(script_path, "w", encoding="utf-8") as f: 
+#             f.write(script_content)
+        
+#         if is_windows:
+#             cmd = f'cmd.exe /c "{script_path} & exit"'
+#         else:
+#             cmd = f'bash "{script_path}"'
+            
+#         env = os.environ.copy()
+#         env["PYTHONUNBUFFERED"] = "1"
+        
+#         task.process = subprocess.Popen(
+#             cmd, shell=True, cwd=self.workspace_dir, stdout=subprocess.PIPE, 
+#             stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', text=True, env=env
+#         )
+        
+#         q = queue.Queue()
+#         def reader_thread(proc, q_out):
+#             for line in iter(proc.stdout.readline, ''): q_out.put(line)
+#             proc.stdout.close()
+
+#         rt = threading.Thread(target=reader_thread, args=(task.process, q), daemon=True)
+#         rt.start()
+
+#         while True:
+#             if task._stop_event.is_set(): break
+#             while not q.empty():
+#                 try: task.log(q.get_nowait())
+#                 except queue.Empty: break
+#             if task.process.poll() is not None:
+#                 while not q.empty():
+#                     try: task.log(q.get_nowait())
+#                     except queue.Empty: break
+#                 break
+#             if time.time() - task.start_time > 36000:
+#                 task.log("进程运行超过硬性超时限制，被系统强制杀死。")
+#                 task.kill()
+#                 break
+#             time.sleep(0.5)
+        
+#         if not task._stop_event.is_set():
+#             task.status = "FINISHED" if task.process.returncode == 0 else "ERROR"
+#             task.result_summary = f"Process exited with code {task.process.returncode}."
+
 class AsyncTask:
     def __init__(self, task_id, task_type, args, workspace_dir):
         self.task_id = task_id
@@ -161,17 +279,56 @@ class AsyncTask:
         self.process = None
         self.thread = None
         self._stop_event = threading.Event()
+        
+        # 新增：用于跟踪和更新Chainlit界面的最后一条消息
+        self.last_cl_msg = None
+        self.is_last_update = False
 
-    def log(self, msg):
-        line = msg.strip() + "\n"
-        self.output_queue.put(line)
-        self.log_history.append(line)
-        self.full_log.append(line)
-        try:
-            cl.run_sync(cl.Message(content=f"[{self.task_id}] {msg.strip()}").send())
-        except Exception as e:
-            # logger.error(f"[TaskManager] Failed to send message: {e}")
-            pass
+    def log(self, msg, is_update=False):
+        # 过滤掉 ANSI 转义字符 (终端颜色代码等)，保持UI整洁
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        clean_msg = ansi_escape.sub('', msg).strip()
+        
+        if not clean_msg:
+            return
+
+        line = clean_msg + "\n"
+
+        if is_update:
+            # 如果当前是进度更新，且上一条也是更新，则覆盖上一条
+            if self.is_last_update and self.last_cl_msg:
+                if self.log_history: self.log_history.pop()
+                if self.full_log: self.full_log.pop()
+                
+                self.log_history.append(line)
+                self.full_log.append(line)
+                
+                try:
+                    self.last_cl_msg.content = f"[{self.task_id}] {clean_msg}"
+                    cl.run_sync(self.last_cl_msg.update()) # 核心：更新而不是发送
+                except Exception:
+                    pass
+            else:
+                # 第一次遇到进度更新行，新建一条消息
+                self.log_history.append(line)
+                self.full_log.append(line)
+                try:
+                    self.last_cl_msg = cl.Message(content=f"[{self.task_id}] {clean_msg}")
+                    cl.run_sync(self.last_cl_msg.send())
+                    self.is_last_update = True
+                except Exception:
+                    pass
+        else:
+            # 正常的新行输出
+            self.output_queue.put(line)
+            self.log_history.append(line)
+            self.full_log.append(line)
+            try:
+                self.last_cl_msg = cl.Message(content=f"[{self.task_id}] {clean_msg}")
+                cl.run_sync(self.last_cl_msg.send())
+                self.is_last_update = False
+            except Exception:
+                pass
 
     def kill(self):
         self._stop_event.set()
@@ -179,29 +336,9 @@ class AsyncTask:
             try: subprocess.run(f"taskkill /F /T /PID {self.process.pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             except: pass
         self.status = "KILLED"
-        self.log("\n[System] Task was KILLED by Orchestrator.")
-
-class TaskManager:
-    def __init__(self, max_concurrent, workspace_dir, coder_model_name, env_type, env_name_or_path):
-        self.max_concurrent = max_concurrent
-        self.workspace_dir = workspace_dir
-        self.coder_model_name = coder_model_name
-        self.env_type = env_type
-        self.env_name_or_path = env_name_or_path
-        self.tasks = {}
-        self.task_counter = 0
-        self.system = None
-        self.finished_archive = {}
-
-    def get_active_tasks(self):
-        return {tid: t for tid, t in self.tasks.items() if t.status == "RUNNING"}
-
-    def get_finished_tasks_and_clear(self, action_history = None ):
-        for tid in list(self.tasks.keys()):
-            if self.tasks[tid].status in ["FINISHED", "KILLED", "ERROR"]:
-                self.finished_archive[tid] = self.tasks.pop(tid)
-        return self.finished_archive
-
+        self.log("\n[System] Task was KILLED by Orchestrator.", is_update=False)
+        
+        
     def _run_worker(self, task, run_script, tid):
         import platform
         is_windows = platform.system() == "Windows"
@@ -224,21 +361,40 @@ class TaskManager:
             f.write(script_content)
         
         if is_windows:
-            cmd = f'cmd.exe /c "{script_path} & exit"'
+            # 加入 chcp 65001 强制Windows cmd以UTF-8输出，解决  乱码问题
+            cmd = f'cmd.exe /c "chcp 65001 > nul & {script_path} & exit"'
         else:
             cmd = f'bash "{script_path}"'
             
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
+        env["PYTHONIOENCODING"] = "utf-8" # 进一步确保Python子进程输出UTF-8
         
         task.process = subprocess.Popen(
             cmd, shell=True, cwd=self.workspace_dir, stdout=subprocess.PIPE, 
-            stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', text=True, env=env
+            stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', 
+            text=True, newline='', env=env # 【关键】添加 newline='' 防止 \r 被自动翻译为 \n
         )
         
         q = queue.Queue()
+        
+        # 【关键】修改读取线程：按字符读取，手动识别 \r 和 \n
         def reader_thread(proc, q_out):
-            for line in iter(proc.stdout.readline, ''): q_out.put(line)
+            buffer = []
+            while True:
+                char = proc.stdout.read(1)
+                if not char:
+                    if buffer:
+                        q_out.put(("".join(buffer), False))
+                    break
+                if char == '\n':
+                    q_out.put(("".join(buffer), False)) # 遇到换行，普通日志
+                    buffer = []
+                elif char == '\r':
+                    q_out.put(("".join(buffer), True))  # 遇到回车，进度条更新
+                    buffer = []
+                else:
+                    buffer.append(char)
             proc.stdout.close()
 
         rt = threading.Thread(target=reader_thread, args=(task.process, q), daemon=True)
@@ -247,13 +403,25 @@ class TaskManager:
         while True:
             if task._stop_event.is_set(): break
             while not q.empty():
-                try: task.log(q.get_nowait())
+                try: 
+                    item = q.get_nowait()
+                    if isinstance(item, tuple):
+                        task.log(item[0], is_update=item[1])
+                    else:
+                        task.log(item)
                 except queue.Empty: break
+            
             if task.process.poll() is not None:
                 while not q.empty():
-                    try: task.log(q.get_nowait())
+                    try: 
+                        item = q.get_nowait()
+                        if isinstance(item, tuple):
+                            task.log(item[0], is_update=item[1])
+                        else:
+                            task.log(item)
                     except queue.Empty: break
                 break
+            
             if time.time() - task.start_time > 36000:
                 task.log("进程运行超过硬性超时限制，被系统强制杀死。")
                 task.kill()
@@ -415,24 +583,22 @@ class BaseContextBuilder:
         """可被用户覆写，实现即插即用的 Context Prompt"""
         context = f"【用户的核心请求/意见】\n{request_text}\n\n"
         context += f"【工作目录结构】\n{workspace_tree}\n\n{hardware_status}\n"
-        
         if system.plan_mode:
             if system.plan_index < len(system.plan):
                 active_steps = system.plan[system.plan_index : system.plan_index + system.concurrent_plan_steps]
+                context += f"完整的科研计划是：\n{system.plan}\n"
                 context += f"【当前执行计划 (Plan Mode)】\n整体进度: {system.plan_index}/{len(system.plan)}\n当前你必须聚焦完成的步骤:\n"
                 for i, step in enumerate(active_steps):
                     context += f"{i+1}. {step}\n"
                 context += "完成上述所有当前步骤后，必须调用 FINISH_STEP 工具推进计划。\n\n"
             else:
                 context += "【当前执行计划 (Plan Mode)】\n所有计划步骤均已完成，请检查并调用 FINISH 工具结束任务。\n\n"
-
         context += f"【当前运行中的任务监控 (最大并发:{system.task_manager.max_concurrent})】\n{active_tasks_info}\n\n"
         if finished_tasks_info: context += f"【刚刚结束的任务】\n{finished_tasks_info}\n\n"
             
         context += "【近期执行过的历史动作】\n"
         for h in system.action_history[-15:]:
-            context += f"Action: {h.get('action')}, Params: {json.dumps(h.get('params',{}), ensure_ascii=False)}\nResult: {str(h.get('result', ''))}\n\n"
-            
+            context += f"Action: {h.get('action')}, Params: {json.dumps(h.get('params',{}), ensure_ascii=False)}\nResult: {str(h.get('result', ''))[-10000:]}\n\n"
         context += f"【最近执行历史的概述】\n{system.summaries}\n\n请根据上述监控状态和请求，返回你的 JSON 决策。如果你需要等待时间收集日志输出，请选择 WAIT。"
         return context
         
