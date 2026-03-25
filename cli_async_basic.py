@@ -9,6 +9,7 @@ import asyncio
 from collections import deque
 import tkinter as tk
 from tkinter import filedialog
+import io
 
 import chainlit as cl
 from chainlit.input_widget import Select, TextInput, Slider
@@ -110,7 +111,7 @@ class WorkspaceManager:
         except PermissionError: return prefix + "[Permission Denied]\n"
 
         items = [f for f in items if not f.startswith('.') and f not in ['__pycache__', 'pdfs']]
-        files = [f for f in items if (os.path.isfile(os.path.join(dir_path, f)) and not f.endswith("experiment_state.json"))]
+        files = [f for f in items if (os.path.isfile(os.path.join(dir_path, f)) and not f.endswith("experiment_state.json") and not f.endswith("log"))]
         dirs = [d for d in items if os.path.isdir(os.path.join(dir_path, d))]
 
         for i, f in enumerate(files):
@@ -338,6 +339,27 @@ class AsyncTask:
         self.status = "KILLED"
         self.log("\n[System] Task was KILLED by Orchestrator.", is_update=False)
         
+class TaskManager:
+    def __init__(self, max_concurrent, workspace_dir, coder_model_name, env_type, env_name_or_path):
+        self.max_concurrent = max_concurrent
+        self.workspace_dir = workspace_dir
+        self.coder_model_name = coder_model_name
+        self.env_type = env_type
+        self.env_name_or_path = env_name_or_path
+        self.tasks = {}
+        self.task_counter = 0
+        self.system = None
+        self.finished_archive = {}
+
+    def get_active_tasks(self):
+        return {tid: t for tid, t in self.tasks.items() if t.status == "RUNNING"}
+
+    def get_finished_tasks_and_clear(self, action_history = None ):
+        for tid in list(self.tasks.keys()):
+            if self.tasks[tid].status in ["FINISHED", "KILLED", "ERROR"]:
+                self.finished_archive[tid] = self.tasks.pop(tid)
+        return self.finished_archive
+        
         
     def _run_worker(self, task, run_script, tid):
         import platform
@@ -370,34 +392,72 @@ class AsyncTask:
         env["PYTHONUNBUFFERED"] = "1"
         env["PYTHONIOENCODING"] = "utf-8" # 进一步确保Python子进程输出UTF-8
         
+        # task.process = subprocess.Popen(
+        #     cmd, shell=True, cwd=self.workspace_dir, stdout=subprocess.PIPE, 
+        #     stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', 
+        #     text=True, newline='', env=env # 【关键】添加 newline='' 防止 \r 被自动翻译为 \n
+        # )
+        
         task.process = subprocess.Popen(
             cmd, shell=True, cwd=self.workspace_dir, stdout=subprocess.PIPE, 
-            stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', 
-            text=True, newline='', env=env # 【关键】添加 newline='' 防止 \r 被自动翻译为 \n
+            stderr=subprocess.STDOUT, env=env 
+        )
+        
+        # 【修改点 2】：手动包装 stdout 数据流，在这里设置 newline='' 拦截换行符转换
+        stream = io.TextIOWrapper(
+            task.process.stdout,
+            encoding='utf-8',
+            errors='replace',
+            newline=''  # 核心：保留 \r 不被转换为 \n
         )
         
         q = queue.Queue()
         
         # 【关键】修改读取线程：按字符读取，手动识别 \r 和 \n
-        def reader_thread(proc, q_out):
+        # def reader_thread(proc, q_out):
+        #     buffer = []
+        #     while True:
+        #         char = proc.stdout.read(1)
+        #         if not char:
+        #             if buffer:
+        #                 q_out.put(("".join(buffer), False))
+        #             break
+        #         if char == '\n':
+        #             q_out.put(("".join(buffer), False)) # 遇到换行，普通日志
+        #             buffer = []
+        #         elif char == '\r':
+        #             q_out.put(("".join(buffer), True))  # 遇到回车，进度条更新
+        #             buffer = []
+        #         else:
+        #             buffer.append(char)
+        #     proc.stdout.close()
+
+        # rt = threading.Thread(target=reader_thread, args=(task.process, q), daemon=True)
+        def reader_thread(proc, q_out, text_stream):
             buffer = []
             while True:
-                char = proc.stdout.read(1)
+                try:
+                    char = text_stream.read(1)
+                except ValueError: # 防止 stream 在关闭时读取报错
+                    break
+                    
                 if not char:
                     if buffer:
                         q_out.put(("".join(buffer), False))
                     break
+                    
                 if char == '\n':
-                    q_out.put(("".join(buffer), False)) # 遇到换行，普通日志
+                    q_out.put(("".join(buffer), False))
                     buffer = []
                 elif char == '\r':
-                    q_out.put(("".join(buffer), True))  # 遇到回车，进度条更新
+                    q_out.put(("".join(buffer), True))
                     buffer = []
                 else:
                     buffer.append(char)
-            proc.stdout.close()
+            text_stream.close()
 
-        rt = threading.Thread(target=reader_thread, args=(task.process, q), daemon=True)
+        # 启动线程，传入手动包装的 stream
+        rt = threading.Thread(target=reader_thread, args=(task.process, q, stream), daemon=True)
         rt.start()
 
         while True:
@@ -501,7 +561,7 @@ class AsyncTask:
                 WorkspaceManager.git_commit_and_push_with_msg(self.workspace_dir, f"Coder finished task.")
                 return
                 
-            if system and action in ["READ_FILE", "WRITE_FILE", "RUN_CODE", "MODIFY_CODE"]:
+            if system and action in ["READ_FILE", "WRITE_FILE", "RUN_CODE", "MODIFY_CODE","FINISH"]:
                 if action in ["WRITE_FILE", "RUN_CODE"]:
                     files = WorkspaceManager.extract_files_from_response(resp)
                     if files: 
@@ -581,7 +641,7 @@ class ToolRegistry:
 class BaseContextBuilder:
     def build_context(self, system: "AgentSystem", request_text: str, active_tasks_info: str, finished_tasks_info: str, workspace_tree: str, hardware_status: str) -> str:
         """可被用户覆写，实现即插即用的 Context Prompt"""
-        context = f"【用户的核心请求/意见】\n{request_text}\n\n"
+        context = f"【用户在你的第{self.rounds}轮行动前提出的请求/意见】\n{request_text}\n\n"
         context += f"【工作目录结构】\n{workspace_tree}\n\n{hardware_status}\n"
         if system.plan_mode:
             if system.plan_index < len(system.plan):
@@ -1198,14 +1258,19 @@ class AgentSystem:
             active_tasks = self.task_manager.get_active_tasks()
             active_tasks_info = "当前没有正在运行的任务。" if not active_tasks else ""
             for tid, t in active_tasks.items():
-                recent_logs = "".join(list(t.log_history)[-50:])
+                recent_logs = "".join(list(t.log_history)[-15:])
+                if len(recent_logs) > 6000:
+                    recent_logs = recent_logs[-5000:]
                 active_tasks_info += f"\n--- [运行中] {tid} ({t.task_type}) (已运行 {int(time.time() - t.start_time)} 秒) ---\n最新日志片段:\n{recent_logs}\n"
-
+            
+            finished_tasks_info_list = []
             finished_tasks_info = ""
             for tid, t in self.task_manager.get_finished_tasks_and_clear().items():
                 final_logs = "".join(t.log_history)
                 finished_tasks_info += f"任务 {tid} 结束。状态: {t.status}. 结果: {t.result_summary}\n Logs:{final_logs}\n"
-                
+                if len(final_logs) > 6000:
+                    final_logs = final_logs[-5000:]
+                finished_tasks_info_list.append({'task_id': tid,'status': t.status,'result_summary': t.result_summary,'final_logs':final_logs})
                 new_result = t.result_summary + final_logs
                 
                 # 检查 action_history 中是否已经存在相同的 task_id 且 result 完全一致的记录
@@ -1224,7 +1289,11 @@ class AgentSystem:
                     })
                 
                 # self.action_history.append({"action": "ASYNC_TASK_FINISH", "params": {"task_id": tid}, "result": t.result_summary+final_logs})
-
+            finished_tasks_info_trunc = finished_tasks_info_list[-15:]
+            finished_tasks_info = ""
+            for info in finished_tasks_info_trunc:
+                finished_tasks_info += f"任务 {info['task_id']} 结束。状态: {info['status']}. 结果: {info['result_summary']}\n Logs:{info['final_logs']}\n"
+            
             # 利用抽离的 ContextBuilder 构建 Prompt
             context_prompt = self.context_builder.build_context(
                 self, request_text, active_tasks_info, finished_tasks_info, workspace_tree, hardware_status

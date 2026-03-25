@@ -25,7 +25,7 @@ class PromptBuilder:
             "Thoughts": "思考过程、进度分析等...",
             "Action": " | ".join(tool_names),
             "Action_Params": json_params,
-            "summary": "无论当前的Action是什么，都必须提供该字段。其表示对当前步骤的详细摘要，包括进行的操作，进行操作的目的，操作的对象，或者运行的详细仿真场景，记录到的数据等"
+            "summary": "无论当前的Action是什么，都必须提供该字段。其表示对前一个步骤所采取的行动的结果的总结（如果有数据，应包含数据以及对数据的评价）；当前步骤的详细摘要，包括进行的操作，进行操作的目的，操作的对象，或者运行的详细仿真场景，记录到的数据等"
         }
         
         if custom_json_fields:

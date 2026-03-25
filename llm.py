@@ -72,46 +72,26 @@ class LLMAgent:
         if model.startswith("claude-"):
             print(f"Using CLAUDE API with {model}.")
             return openai.OpenAI(
-                api_key = os.environ.get("CLAUDE_API_KEY"),
+                api_key = os.environ.get("OPENROUTER_API_KEY"),
                 #base_url="https://newapi.baosiapi.com/v1"
-                base_url = "https://jeniya.top/v1"
+                #base_url = "https://jeniya.top/v1"
+                base_url = os.environ.get('API_BASE_URL')
             ), model
-        elif model.startswith("bedrock") and "claude" in model:
-            client_model = model.split("/")[-1]
-            print(f"Using Amazon Bedrock with model {client_model}.")
-            return anthropic.AnthropicBedrock(), client_model
-        elif model.startswith("vertex_ai") and "claude" in model:
-            client_model = model.split("/")[-1]
-            print(f"Using Vertex AI with model {client_model}.")
-            return anthropic.AnthropicVertex(), client_model
-        elif 'gpt' in model or "o1" in model or "o3" in model:
-            print(f"Using OpenAI API with model {model}.")
-            return openai.OpenAI(), model
-        elif model in ["deepseek-chat", "deepseek-reasoner", "deepseek-coder"]:
+        elif "gemini" in model or "gpt" in model:
             print(f"Using OpenAI API with {model}.")
             return openai.OpenAI(
-                api_key=os.environ.get("DEEPSEEK_API_KEY"),
-                base_url="https://api.deepseek.com"
-            ), model
-        elif model == "llama3.1-405b":
-            print(f"Using OpenAI API with {model}.")
-            return openai.OpenAI(
-                api_key=os.environ.get("OPENROUTER_API_KEY"),
-                base_url="https://openrouter.ai/api/v1"
-            ), "meta-llama/llama-3.1-405b-instruct"
-        elif "gemini" in model:
-            print(f"Using OpenAI API with {model}.")
-            return openai.OpenAI(
-                api_key = os.environ.get("JIANYI_API_KEY"),
+                api_key = os.environ.get("OPENROUTER_API_KEY"),
                 #base_url="https://newapi.baosiapi.com/v1"
-                base_url = "https://jeniya.top/v1"
+                # base_url = "https://jeniya.top/v1"
+                base_url = os.environ.get('API_BASE_URL')
             ), model
         elif "glm" in model:
             print(f"Using OpenAI API with {model}.")
             return openai.OpenAI(
-                api_key = os.environ.get("GLM_API"),
+                api_key = os.environ.get("OPENROUTER_API_KEY"),
                 #base_url="https://newapi.baosiapi.com/v1"
-                base_url = "https://jeniya.top/v1"
+                #base_url = "https://jeniya.top/v1"
+                base_url = os.environ.get('API_BASE_URL')
             ), model
         
         else:
@@ -146,7 +126,7 @@ class LLMAgent:
                 "content": [{"type": "text", "text": content}]
             })
 
-        elif 'gpt' in self.client_model:
+        elif 'xxx' in self.client_model:
             self.msg_history.append({"role": "user", "content": msg})
             response = self.client.chat.completions.create(
                 model=self.client_model,
@@ -225,7 +205,7 @@ class LLMAgent:
             content = response.choices[0].message.content
             self.msg_history.append({"role": "assistant", "content": content})
 
-        elif "gemini"  in self.client_model or "glm" in self.client_model:
+        elif "gemini"  in self.client_model or "glm" in self.client_model or "gpt" in self.client_model:
             self.msg_history.append({"role": "user", "content": msg})
             response = self.client.chat.completions.create(
                 model=self.client_model,
@@ -281,7 +261,7 @@ class LLMAgent:
 
         self._log_interaction("SYSTEM MESSAGE", system_message)
         self._log_interaction("USER", msg)
-        if "gemini" or 'glm' in self.client_model:
+        if "gemini" or 'glm' in self.client_model or "gpt" in self.client_model:
             self.msg_history.append({"role": "user", "content": msg})
             response = self.client.chat.completions.create(
                 model=self.client_model,

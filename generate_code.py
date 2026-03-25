@@ -27,7 +27,10 @@ class CodeContextBuilder(BaseContextBuilder):
             
         context += "【近期执行过的历史动作】\n"
         for h in system.action_history[-15:]:
-            context += f"Action: {h.get('action')}, Params: {json.dumps(h.get('params',{}), ensure_ascii=False)}\nResult: {str(h.get('result', ''))[-10000:]}\n\n"
+            result_str = str(h.get('result', ''))
+            if len(result_str) > 110000:
+                result_str = result_str[-100000:] 
+            context += f"Action: {h.get('action')}, Params: {json.dumps(h.get('params',{}), ensure_ascii=False)}\nResult: {result_str}\n\n"
             
         context += f"【最近执行历史的概述】\n{system.summaries}\n\n请根据上述监控状态和请求，返回你的 JSON 决策。如果你需要等待时间收集日志输出，请选择 WAIT。"
         return context
