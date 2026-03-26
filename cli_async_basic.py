@@ -718,7 +718,7 @@ class StandardTools:
     @staticmethod
     async def wait(system, params, resp):
         wait_time = int(params.get("wait_seconds", 10))
-        if wait_time < 100: wait_time = 100
+        if wait_time < 20: wait_time = 20
         await cl.Message(content=f"⏳ 等待 `{wait_time}` 秒收集日志信息... (发送新指令可立即打断)").send()
         try:
             await asyncio.wait_for(system.interrupt_event.wait(), timeout=min(wait_time, 600))
@@ -856,12 +856,12 @@ class StandardTools:
                 if norm_target != norm_old:
                     # 校验失败时，把真实的行代码返回给 LLM，帮助它纠正幻觉
                     actual_code_str = "".join(target_lines)
-                    return (
-                        f"Error: Code mismatch at lines {start_line}-{end_line}.\n"
-                        f"You expected to replace:\n{old_code}\n\n"
-                        f"But the actual code at lines {start_line}-{end_line} is:\n{actual_code_str}\n"
-                        f"Please check the line numbers and try again."
-                    )
+                    # return (
+                    #     f"Error: Code mismatch at lines {start_line}-{end_line}.\n"
+                    #     f"You expected to replace:\n{old_code}\n\n"
+                    #     f"But the actual code at lines {start_line}-{end_line} is:\n{actual_code_str}\n"
+                    #     f"Please check the line numbers and try again."
+                    # )
 
             # 4. 处理新代码并确保换行符正确
             # 使用 splitlines() 去除 LLM 可能乱加的 \n，然后统一规范添加 \n

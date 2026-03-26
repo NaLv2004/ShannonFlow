@@ -27,7 +27,8 @@ class WriteupContextBuilder(BaseContextBuilder):
             
         context += f"【最近执行历史的概述】\n{system.summaries}\n\n"
         
-        context += "提示：务必将所有的 .tex 和 .bib 输出至 `papers` 文件夹中，最后确保能够有 `papers\\main.tex`。\n"
+        context += "提示：务必将所有的 .tex 和 .bib 输出至 `papers` 文件夹中，最后确保能够有 `papers/main.tex`。（使用IEEE trans模板）\n"
+        context += "撰写后面的章节时，务必保证你的上下文中确实存在前面所有章节的具体内容\n"
         context += "请根据上述信息，返回你的 JSON 决策！"
         return context
 

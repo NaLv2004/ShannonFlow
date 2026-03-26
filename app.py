@@ -18,7 +18,7 @@ from update_from_reviews import run_update_from_reviews
 
 from cli_async_basic import ChainlitUI
 
-PHASES = ["1_Generate_Ideas", "2_Generate_Code"]
+PHASES = ["1_Generate_Ideas", "2_Generate_Code","3_Perform_Experiments","4_Writeup"]
 
 PHASE_INFO = {
     "1_Generate_Ideas":       {"emoji": "💡", "name": "Idea 生成",     "desc": "多个 Student Agent 并行构思 → Teacher Agent 新颖性审查 → 交互式选择与精炼"},
